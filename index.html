@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>B&A — Dr. Miguel Soto Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:  #030707;
+  --taupe:  #A19487;
+  --cream:  #E9E6E1;
+  --cream2: #F4F2F1;
+  --white:  #FFFFFF;
+  --taupe-light: #C8C2BB;
+  --success: #2D6A4F;
+  --error:   #8B2020;
+  --font-body: 'Jost', 'Helvetica Neue', Helvetica, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --radius: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--cream2);
+  font-family: var(--font-body);
+  color: var(--black);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--black);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-label {
+  color: var(--taupe);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+.header-monogram {
+  font-family: var(--font-display);
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+}
+.header-right {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  font-weight: 300;
+  text-align: right;
+}
+
+/* ── MAIN ── */
+main {
+  flex: 1;
+  padding: 24px 16px 48px;
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--black);
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--taupe-light);
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--cream);
+}
+.card-title {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  font-weight: 400;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.badge {
+  background: var(--taupe);
+  color: var(--white);
+  border-radius: 20px;
+  font-size: 9px;
+  padding: 1px 7px;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+}
+
+/* ── INPUTS ── */
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+label {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+input[type="text"] {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--cream);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  font-weight: 300;
+  background: var(--cream2);
+  color: var(--black);
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+input[type="text"]:focus { border-color: var(--taupe); }
+input[type="text"]::placeholder { color: var(--taupe-light); }
+
+/* ── CHIPS DE PROCEDIMIENTO ── */
+.group-label {
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe-light);
+  font-weight: 400;
+  margin: 12px 0 6px;
+}
+.group-label:first-child { margin-top: 0; }
+.chip-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.chip {
+  padding: 9px 10px;
+  border: 1px solid var(--cream);
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--cream2);
+  color: var(--black);
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  line-height: 1.3;
+}
+.chip.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+/* ── MOMENTO ── */
+.momento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.momento-btn {
+  padding: 13px 8px;
+  border: 1px solid var(--cream);
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  background: var(--cream2);
+  color: var(--black);
+  text-align: center;
+  transition: all 0.15s;
+  user-select: none;
+  font-family: var(--font-body);
+  line-height: 1.3;
+}
+.momento-btn.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+/* ── UPLOAD ── */
+.upload-zone {
+  border: 1.5px dashed var(--taupe-light);
+  border-radius: var(--radius);
+  padding: 26px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--cream2);
+  position: relative;
+  overflow: hidden;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--taupe);
+  background: var(--cream);
+}
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+}
+.upload-icon { font-size: 24px; margin-bottom: 8px; }
+.upload-text {
+  font-size: 12px;
+  color: var(--taupe);
+  letter-spacing: 0.06em;
+  font-weight: 300;
+}
+.upload-hint { font-size: 10px; color: var(--taupe-light); margin-top: 4px; letter-spacing: 0.05em; }
+
+/* ── PREVIEW ── */
+#preview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+.thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.thumb img, .thumb video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.thumb-del {
+  position: absolute;
+  top: 3px; right: 3px;
+  background: rgba(3,7,7,0.75);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+  padding: 0;
+}
+.thumb-vid {
+  position: absolute;
+  bottom: 3px; left: 3px;
+  background: rgba(3,7,7,0.7);
+  color: #fff;
+  font-size: 8px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+
+/* ── BOTÓN ENVIAR ── */
+#btn-enviar {
+  width: 100%;
+  padding: 15px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 400;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 8px;
+}
+#btn-enviar:disabled { opacity: 0.35; cursor: not-allowed; }
+#btn-enviar:not(:disabled):hover { opacity: 0.82; }
+
+/* ── PROGRESS ── */
+#progress-wrap { display: none; margin-top: 12px; }
+.prog-bg { background: var(--cream); border-radius: 3px; height: 3px; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--taupe); border-radius: 3px; transition: width 0.3s; width: 0%; }
+.prog-label { font-size: 10px; color: var(--taupe); margin-top: 6px; letter-spacing: 0.06em; text-align: center; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(70px);
+  padding: 11px 22px;
+  border-radius: 40px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  transition: transform 0.3s, opacity 0.3s;
+  opacity: 0;
+  z-index: 999;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
+  background: var(--black);
+  color: var(--white);
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+#toast.success { background: var(--success); }
+#toast.error { background: var(--error); }
+
+/* ── DIVIDER ── */
+.section-div {
+  height: 1px;
+  background: var(--cream);
+  margin: 4px 0 14px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-label">Sistema B&amp;A</div>
+  </div>
+  <div class="header-monogram">MS</div>
+  <div class="header-right">Dr. Miguel Soto<br>Cirujano Plástico</div>
+</header>
+
+<main>
+  <div class="page-title">Registro Before &amp; After</div>
+
+  <!-- PACIENTE -->
+  <div class="card">
+    <div class="card-title">Paciente</div>
+    <div class="row-2">
+      <div class="field">
+        <label>Apellido</label>
+        <input type="text" id="apellido" placeholder="Apellido" autocomplete="off" autocorrect="off">
+      </div>
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" id="nombre" placeholder="Nombre" autocomplete="off" autocorrect="off">
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCEDIMIENTO -->
+  <div class="card">
+    <div class="card-title">
+      Procedimiento
+      <span class="badge" id="proc-count">0</span>
+    </div>
+
+    <div class="group-label">Facial</div>
+    <div class="chip-grid">
+      <div class="chip" data-id="rinoplastia">Rinoplastia</div>
+      <div class="chip" data-id="blefaroplastia">Blefaroplastia</div>
+      <div class="chip" data-id="deepplane">Deep Plane</div>
+      <div class="chip" data-id="renuvion-face">Renuvion Facial</div>
+      <div class="chip" data-id="mentoplastia">Mentoplastia</div>
+      <div class="chip" data-id="bichectomia">Bichectomía</div>
+      <div class="chip" data-id="otoplastia">Otoplastia</div>
+      <div class="chip" data-id="labios">Labios</div>
+    </div>
+
+    <div class="group-label">Corporal</div>
+    <div class="chip-grid">
+      <div class="chip" data-id="mama">Mamoplastia</div>
+      <div class="chip" data-id="abdominoplastia">Abdominoplastia</div>
+      <div class="chip" data-id="body360">Body 360</div>
+      <div class="chip" data-id="liposuccion">Liposucción</div>
+      <div class="chip" data-id="renuvion-corp">Renuvion Corp.</div>
+      <div class="chip" data-id="lipo-muslos">Lipo Muslos</div>
+      <div class="chip" data-id="lipo-brazos">Lipo Brazos</div>
+      <div class="chip" data-id="celfina">Celfina</div>
+    </div>
+
+    <div class="group-label">Inyectables</div>
+    <div class="chip-grid">
+      <div class="chip" data-id="toxina">Toxina Botulínica</div>
+      <div class="chip" data-id="ha-labios">HA Labios</div>
+      <div class="chip" data-id="ha-rellenos">HA Rellenos</div>
+      <div class="chip" data-id="bioestimuladores">Bioestimuladores</div>
+    </div>
+
+    <div class="group-label">Energy Devices</div>
+    <div class="chip-grid">
+      <div class="chip" data-id="endolifting-facial">Endolifting Facial</div>
+      <div class="chip" data-id="endolifting-corp">Endolifting Corp.</div>
+      <div class="chip" data-id="spectra">Spectra</div>
+    </div>
+
+    <div class="group-label">Medicina Regenerativa</div>
+    <div class="chip-grid">
+      <div class="chip" data-id="prp-facial">PRP Facial</div>
+      <div class="chip" data-id="prp-corp">PRP Corporal</div>
+    </div>
+
+    <div class="group-label">Terapia Postoperatoria</div>
+    <div class="chip-grid">
+      <div class="chip" data-id="fibrosis">Fibrosis</div>
+      <div class="chip" data-id="laser-cicatriz">Láser Cicatriz</div>
+    </div>
+  </div>
+
+  <!-- MOMENTO -->
+  <div class="card">
+    <div class="card-title">Momento</div>
+    <div class="momento-grid">
+      <button class="momento-btn" data-val="PREOPERATORIO">Pre­operatorio</button>
+      <button class="momento-btn" data-val="POSTOPERATORIO">Post­operatorio</button>
+      <button class="momento-btn" data-val="TERAPIA_POST">Terapia Post</button>
+    </div>
+  </div>
+
+  <!-- ARCHIVOS -->
+  <div class="card">
+    <div class="card-title">
+      Archivos
+      <span class="badge" id="file-count">0</span>
+    </div>
+    <div class="upload-zone" id="drop-zone">
+      <input type="file" id="file-input" multiple accept="image/*,video/*">
+      <div class="upload-icon">📎</div>
+      <div class="upload-text">Toca para seleccionar fotos o videos</div>
+      <div class="upload-hint">JPG · PNG · HEIC · MP4 · MOV</div>
+    </div>
+    <div id="preview-grid"></div>
+  </div>
+
+  <!-- ENVIAR -->
+  <button id="btn-enviar" disabled>Registrar B&amp;A</button>
+  <div id="progress-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="prog-label" id="prog-label">Preparando archivos…</div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycby9SgXXvnGVwoqlsv3QCjYaxxSi0nBLN73LdGWsVUWvhVHdxmWYKEzz-iB9_By083ikWQ/exec';
+
+const LABELS = {
+  'rinoplastia':'Rinoplastia','blefaroplastia':'Blefaroplastia','deepplane':'Deep Plane',
+  'renuvion-face':'Renuvion Facial','mentoplastia':'Mentoplastia','bichectomia':'Bichectomía',
+  'otoplastia':'Otoplastia','labios':'Labios','mama':'Mamoplastia',
+  'abdominoplastia':'Abdominoplastia','body360':'Body 360','liposuccion':'Liposucción',
+  'renuvion-corp':'Renuvion Corporal','lipo-muslos':'Lipo Muslos','lipo-brazos':'Lipo Brazos',
+  'celfina':'Celfina','toxina':'Toxina Botulínica','ha-labios':'HA Labios',
+  'ha-rellenos':'HA Rellenos','bioestimuladores':'Bioestimuladores',
+  'endolifting-facial':'Endolifting Facial','endolifting-corp':'Endolifting Corporal',
+  'spectra':'Spectra','prp-facial':'PRP Facial','prp-corp':'PRP Corporal',
+  'fibrosis':'Fibrosis','laser-cicatriz':'Láser Cicatriz'
+};
+
+let procs = [], momento = '', files = [];
+
+// Chips
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => {
+    c.classList.toggle('active');
+    const id = c.dataset.id;
+    procs = c.classList.contains('active')
+      ? [...procs, id]
+      : procs.filter(p => p !== id);
+    document.getElementById('proc-count').textContent = procs.length;
+    check();
+  });
+});
+
+// Momento
+document.querySelectorAll('.momento-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.momento-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    momento = b.dataset.val;
+    check();
+  });
+});
+
+// Files
+const fileInput = document.getElementById('file-input');
+const dropZone  = document.getElementById('drop-zone');
+
+fileInput.addEventListener('change', e => addFiles(e.target.files));
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); });
+
+function addFiles(list) {
+  Array.from(list).forEach(f => {
+    if (!files.find(x => x.name === f.name && x.size === f.size)) files.push(f);
+  });
+  renderPreviews(); check();
+}
+
+function renderPreviews() {
+  const grid = document.getElementById('preview-grid');
+  grid.innerHTML = '';
+  document.getElementById('file-count').textContent = files.length;
+  files.forEach((f, i) => {
+    const w = document.createElement('div'); w.className = 'thumb';
+    const url = URL.createObjectURL(f);
+    if (f.type.startsWith('video/')) {
+      const v = document.createElement('video'); v.src = url; v.muted = true; v.preload = 'metadata'; w.appendChild(v);
+      const b = document.createElement('div'); b.className = 'thumb-vid'; b.textContent = 'VID'; w.appendChild(b);
+    } else {
+      const img = document.createElement('img'); img.src = url; img.alt = ''; w.appendChild(img);
+    }
+    const d = document.createElement('button'); d.className = 'thumb-del'; d.textContent = '×';
+    d.addEventListener('click', e => { e.stopPropagation(); files.splice(i, 1); renderPreviews(); check(); });
+    w.appendChild(d); grid.appendChild(w);
+  });
+}
+
+function check() {
+  const a = document.getElementById('apellido').value.trim();
+  const n = document.getElementById('nombre').value.trim();
+  document.getElementById('btn-enviar').disabled = !(a && n && procs.length && momento && files.length);
+}
+document.getElementById('apellido').addEventListener('input', check);
+document.getElementById('nombre').addEventListener('input', check);
+
+// Enviar
+document.getElementById('btn-enviar').addEventListener('click', async () => {
+  const apellido = document.getElementById('apellido').value.trim();
+  const nombre   = document.getElementById('nombre').value.trim();
+  const progWrap = document.getElementById('progress-wrap');
+  const progFill = document.getElementById('prog-fill');
+  const progLabel = document.getElementById('prog-label');
+
+  document.getElementById('btn-enviar').disabled = true;
+  progWrap.style.display = 'block';
+
+  try {
+    const archivos = [];
+    for (let i = 0; i < files.length; i++) {
+      progLabel.textContent = `Preparando ${i+1}/${files.length}…`;
+      progFill.style.width = `${((i+1)/files.length)*50}%`;
+      const b64 = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(files[i]);
+      });
+      archivos.push({ nombre: files[i].name, mimeType: files[i].type, base64: b64 });
+    }
+
+    progLabel.textContent = 'Subiendo a Drive…';
+    progFill.style.width = '75%';
+
+    const payload = {
+      apellido, nombre, momento,
+      procedimientos: procs.map(id => LABELS[id] || id),
+      procIds: procs,
+      archivos
+    };
+
+    const result = await new Promise((res, rej) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', BACKEND_URL, true);
+      xhr.setRequestHeader('Content-Type', 'text/plain');
+      xhr.onload = () => { try { res(JSON.parse(xhr.responseText)); } catch(e) { rej(new Error('Respuesta inválida')); } };
+      xhr.onerror = () => rej(new Error('Error de conexión'));
+      xhr.send(JSON.stringify(payload));
+    });
+
+    progFill.style.width = '100%';
+
+    if (result.success) {
+      toast(`✅ ${result.archivosSubidos} archivo(s) — ${result.carpeta}`, 'success');
+      reset();
+    } else {
+      throw new Error(result.error || 'Error desconocido');
+    }
+
+  } catch(err) {
+    toast('❌ ' + err.message, 'error');
+    document.getElementById('btn-enviar').disabled = false;
+  } finally {
+    setTimeout(() => { progWrap.style.display = 'none'; progFill.style.width = '0%'; }, 3000);
+  }
+});
+
+function reset() {
+  document.getElementById('apellido').value = '';
+  document.getElementById('nombre').value = '';
+  procs = []; momento = ''; files = [];
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.momento-btn.active').forEach(b => b.classList.remove('active'));
+  document.getElementById('proc-count').textContent = '0';
+  document.getElementById('file-count').textContent = '0';
+  document.getElementById('preview-grid').innerHTML = '';
+  document.getElementById('btn-enviar').disabled = true;
+}
+
+let toastT;
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  clearTimeout(toastT);
+  t.textContent = msg; t.className = 'show ' + type;
+  toastT = setTimeout(() => { t.className = ''; }, 4500);
+}
+</script>
+</body>
+</html>
