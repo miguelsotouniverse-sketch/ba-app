@@ -620,52 +620,46 @@ function buildSummaryCard() {
   return card;
 }
 
-// ─── SAVE TO SHEETS (via Anthropic API + MCP) ────────────────
+// ─── SAVE TO SHEETS (via Google Apps Script) ─────────────────
+// Para activar guardado automático en Sheets:
+// 1. Ve a script.google.com → Nuevo proyecto
+// 2. Pega este código:
+//    function doPost(e) {
+//      var d = JSON.parse(e.postData.contents);
+//      SpreadsheetApp.openById("1AjA0lsYOtXoRe16UuMNWWo_p2WXxFzM0zXJUqLc-BrA").getSheets()[0].appendRow(d.row);
+//      return ContentService.createTextOutput("OK");
+//    }
+// 3. Implementar → Nueva implementación → App web
+//    Ejecutar como: Yo | Acceso: Cualquier persona
+// 4. Copia la URL y pégala en APPS_SCRIPT_URL abajo
+
+const APPS_SCRIPT_URL = ""; // ← pega tu URL aquí
+
 async function saveToSheets() {
   saving = true;
   input.disabled = true;
   sendBtn.disabled = true;
   addTyping();
 
-  const csvRow = STEPS.map(s => `"${(record[s] || "").replace(/"/g, '""')}"`).join(",");
+  const csvRow = STEPS.map(s => '"' + (record[s] || "").replace(/"/g, '""') + '"').join(",");
+  const rowData = STEPS.map(s => record[s] || "");
 
-  const prompt = `You have access to a Google Sheets MCP. 
-Append exactly ONE new row to the spreadsheet with ID "${SHEET_ID}".
-Sheet name: "Sheet1" (the first sheet).
-Use the method spreadsheets.values.append with:
-- range: "A1"
-- valueInputOption: "USER_ENTERED"
-- values: [[${STEPS.map(s => JSON.stringify(record[s] || "")).join(",")}]]
-
-Do it now and confirm with "GUARDADO_OK" if successful, or "GUARDADO_ERROR" if it failed.`;
+  if (!APPS_SCRIPT_URL) {
+    removeTyping();
+    showFallback(csvRow);
+    saving = false;
+    return;
+  }
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    await fetch(APPS_SCRIPT_URL, {
       method: "POST",
+      mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: "You are a data entry assistant. When asked to save data to Google Sheets via MCP, do it faithfully. Respond only with GUARDADO_OK or GUARDADO_ERROR after the operation.",
-        messages: [{ role: "user", content: prompt }],
-        mcp_servers: [{
-          type: "url",
-          url: "https://drivemcp.googleapis.com/mcp/v1",
-          name: "google-drive-mcp"
-        }]
-      })
+      body: JSON.stringify({ row: rowData })
     });
-
-    const data = await response.json();
-    const text = (data.content || []).map(b => b.text || "").join(" ");
     removeTyping();
-
-    if (text.includes("GUARDADO_OK") || text.includes("ok") || text.includes("success") || text.includes("append")) {
-      showSuccess();
-    } else {
-      // Fallback: show manual CSV
-      showFallback(csvRow);
-    }
+    showSuccess();
   } catch (err) {
     removeTyping();
     showFallback(csvRow);
