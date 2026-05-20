@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B&A — Dr. Miguel Soto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --black:#0D0D0D;--white:#FFFFFF;
+  --gray-light:#E9E6E1;--gray-warm:#F4F2F1;
+  --taupe:#A89880;--taupe-light:#EDE8E2;
+  --text:#0D0D0D;--muted:#8A8480;--border:#D8D4CE;
+}
+html,body{min-height:100%;background:var(--gray-warm);font-family:'Jost',sans-serif;color:var(--text)}
+
+/* ── LAYOUT ── */
+.shell{min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER — full width */
+.header{background:var(--black);padding:1.75rem 2rem 1.25rem;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;border:1px solid rgba(255,255,255,0.05);border-radius:50%}
+.header-left{}
+.header-eyebrow{font-size:9px;letter-spacing:0.22em;color:var(--taupe);text-transform:uppercase;font-weight:400;margin-bottom:5px}
+.header-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--white);letter-spacing:0.08em;line-height:1.1}
+.header-subtitle{font-size:8px;letter-spacing:0.3em;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-top:3px;font-weight:300}
+.header-right{text-align:right;flex-shrink:0}
+.header-module{font-size:9px;letter-spacing:0.2em;color:var(--taupe);text-transform:uppercase;font-weight:400}
+.header-step{font-size:11px;color:rgba(255,255,255,0.4);font-weight:300;margin-top:4px;letter-spacing:0.05em}
+.monogram-svg{width:48px;height:48px;opacity:0.12;margin-bottom:6px}
+
+/* STEP BAR */
+.step-bar{display:flex;gap:3px;background:var(--black);padding:0 2rem 1.5rem}
+.step-dot{flex:1;height:1px;background:rgba(255,255,255,0.12);transition:background 0.4s;max-width:120px}
+.step-dot.active{background:var(--taupe)}
+.step-dot.done{background:rgba(255,255,255,0.3)}
+
+/* MAIN CONTENT AREA */
+.main{flex:1;padding:2.5rem 2rem;max-width:1200px;width:100%;margin:0 auto}
+
+/* MOBILE: single column */
+.layout-1col{display:flex;flex-direction:column;gap:0;max-width:480px;margin:0 auto}
+.layout-2col{display:none}
+
+/* DESKTOP: two columns */
+@media(min-width:768px){
+  .layout-1col{display:none}
+  .layout-2col{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+  .col-left{}
+  .col-right{position:sticky;top:2rem}
+  .header{padding:2rem 3rem 1.5rem}
+  .step-bar{padding:0 3rem 1.5rem}
+  .main{padding:2.5rem 3rem}
+}
+@media(min-width:1100px){
+  .layout-2col{grid-template-columns:1.1fr 0.9fr;gap:4rem}
+}
+
+/* SCREENS */
+.screen{display:none}
+.screen.visible{display:block;animation:fadeIn 0.25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION LABEL */
+.section-label{font-size:8px;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:1.75rem;padding-bottom:10px;border-bottom:1px solid var(--gray-light)}
+.section-label-sm{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:10px}
+
+/* FIELDS */
+.field{margin-bottom:1.25rem}
+.field label{display:block;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:6px}
+.field input,.field select{width:100%;padding:11px 0;border:none;border-bottom:1px solid var(--border);border-radius:0;background:transparent;font-size:14px;font-family:'Jost',sans-serif;color:var(--text);font-weight:300;outline:none;-webkit-appearance:none;transition:border-color 0.2s}
+.field input::placeholder{color:var(--muted);font-weight:300}
+.field input:focus,.field select:focus{border-bottom-color:var(--black)}
+.field select{background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238A8480' stroke-width='1'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;cursor:pointer}
+
+/* MOMENTO */
+.momento-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px}
+.mbtn{padding:13px 6px;border:1px solid var(--border);background:transparent;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.2s}
+.mbtn:hover{border-color:var(--black);color:var(--black)}
+.mbtn.sel-antes,.mbtn.sel-despues{background:var(--black);border-color:var(--black);color:var(--white)}
+.mbtn.sel-tpo{background:var(--taupe);border-color:var(--taupe);color:var(--white)}
+
+/* TPO */
+.tpo-block{border:1px solid var(--taupe);padding:14px;margin-bottom:1.25rem;background:var(--taupe-light)}
+.tpo-block label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--taupe);font-weight:500;display:block;margin-bottom:8px}
+.tpo-block select{width:100%;padding:8px 0;border:none;border-bottom:1px solid var(--taupe);background:transparent;font-family:'Jost',sans-serif;font-size:13px;color:var(--text);font-weight:300;outline:none;-webkit-appearance:none}
+
+
+
+/* FILTER */
+.filter-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.ftag{padding:5px 11px;border:1px solid var(--border);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;font-family:'Jost',sans-serif;font-weight:500;color:var(--muted);cursor:pointer;background:transparent;transition:all 0.15s}
+.ftag:hover{border-color:var(--black);color:var(--black)}
+.ftag.on{background:var(--black);border-color:var(--black);color:var(--white)}
+.ftag.tpo-on{background:var(--taupe);border-color:var(--taupe);color:var(--white)}
+.sel-count{font-size:9px;color:var(--taupe);letter-spacing:0.1em;margin-left:6px}
+
+/* PROCS */
+.procs-list{display:flex;flex-direction:column;gap:1px;border:1px solid var(--border);max-height:260px;overflow-y:auto}
+@media(min-width:768px){.procs-list{max-height:320px}}
+.proc-item{display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;background:var(--white);border-left:2px solid transparent;transition:all 0.15s}
+.proc-item:hover{background:var(--gray-warm)}
+.proc-item.sel{background:var(--black);border-left-color:var(--taupe)}
+.proc-item.is-tpo:not(.sel){border-left-color:var(--taupe)}
+.proc-item.sel.is-tpo{background:var(--taupe)}
+.pcheck{width:14px;height:14px;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.proc-item.sel .pcheck{background:var(--taupe);border-color:var(--taupe)}
+.pcheck svg{display:none}
+.proc-item.sel .pcheck svg{display:block}
+.pname{font-size:12px;font-weight:300;color:var(--text);flex:1;line-height:1.3}
+.proc-item.sel .pname,.proc-item.sel.is-tpo .pname{color:var(--white)}
+.pbadge{font-size:8px;letter-spacing:0.12em;color:var(--muted);font-weight:500;flex-shrink:0}
+.proc-item.sel .pbadge{color:rgba(255,255,255,0.45)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--gray-light);margin:1.5rem 0}
+
+/* PROGRESS */
+.prog-wrap{height:1px;background:var(--gray-light);margin-bottom:6px;overflow:hidden}
+.prog-fill{height:100%;background:var(--black);transition:width 0.3s}
+.prog-txt{font-size:10px;letter-spacing:0.1em;color:var(--muted);margin-bottom:1.5rem;font-weight:300}
+
+/* CHECKLIST */
+.cl-section{margin-bottom:1.5rem}
+.cl-sec-title{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gray-light);display:flex;align-items:center;gap:8px}
+.cl-sec-title.vid{color:var(--taupe);border-bottom-color:var(--taupe-light)}
+.cl-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--gray-warm);cursor:pointer}
+.cl-item:last-child{border-bottom:none}
+.cl-box{width:18px;height:18px;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.cl-item.done .cl-box{background:var(--black);border-color:var(--black)}
+.cl-item.done.is-vid .cl-box{background:var(--taupe);border-color:var(--taupe)}
+.cl-box svg{display:none}
+.cl-item.done .cl-box svg{display:block}
+.cl-label{font-size:13px;font-weight:300;color:var(--text);flex:1;letter-spacing:0.02em}
+.cl-item.done .cl-label{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border)}
+.cl-label.vid{color:var(--taupe);font-weight:400}
+.cl-item.done .cl-label.vid{color:var(--muted)}
+.tpo-banner{border:1px solid var(--taupe);padding:10px 14px;margin-bottom:1.25rem;background:var(--taupe-light);font-size:11px;color:var(--taupe);font-weight:300;line-height:1.5}
+.tpo-banner strong{font-weight:500}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--border);padding:24px 20px;text-align:center;cursor:pointer;background:var(--gray-warm);transition:all 0.2s;margin:1rem 0}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--black);background:var(--gray-light)}
+@media(min-width:768px){.upload-zone{padding:36px 24px}}
+.upload-zone input{display:none}
+.upload-icon{width:28px;height:28px;margin:0 auto;color:var(--muted)}
+.upload-zone p{font-size:12px;color:var(--muted);margin-top:10px;font-weight:300;line-height:1.6}
+.upload-zone .desktop-hint{display:none}
+@media(min-width:768px){.upload-zone .desktop-hint{display:block}.upload-zone .mobile-hint{display:none}}
+.file-list{display:flex;flex-direction:column;gap:3px;margin-top:8px}
+.file-chip{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--white);border:1px solid var(--border);font-size:11px;font-weight:300;transition:background 0.15s}
+.file-chip:hover{background:var(--gray-warm)}
+.file-chip .ficon{color:var(--taupe);font-size:10px;flex-shrink:0}
+.file-chip .fname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.file-chip .fsize{color:var(--muted);font-size:10px;flex-shrink:0}
+.file-chip .rm{color:var(--muted);cursor:pointer;font-size:16px;line-height:1;flex-shrink:0;padding:0 2px;transition:color 0.15s}
+.file-chip .rm:hover{color:var(--black)}
+
+/* BUTTONS */
+.btn-primary{width:100%;padding:14px;background:var(--black);border:none;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;font-weight:500;color:var(--white);cursor:pointer;margin-top:1.5rem;transition:opacity 0.2s;position:relative;overflow:hidden}
+.btn-primary::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--taupe);transition:width 0.3s}
+.btn-primary:hover:not(:disabled)::after{width:100%}
+.btn-primary:disabled{opacity:0.3;cursor:not-allowed}
+.btn-secondary{width:100%;padding:13px;background:transparent;border:1px solid var(--border);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;font-weight:400;color:var(--muted);cursor:pointer;margin-top:8px;transition:all 0.15s}
+.btn-secondary:hover{border-color:var(--black);color:var(--black)}
+
+/* SUMMARY */
+.sum-card{border:1px solid var(--border)}
+.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--gray-warm);gap:16px}
+.sum-row:last-child{border-bottom:none}
+.sum-label{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);font-weight:500;flex-shrink:0;padding-top:2px}
+.sum-val{font-size:12px;font-weight:300;color:var(--text);text-align:right;line-height:1.5}
+.badge{display:inline-block;padding:3px 10px;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;font-weight:500}
+.b-antes,.b-despues{background:var(--black);color:var(--white)}
+.b-tpo{background:var(--taupe);color:var(--white)}
+
+/* UPLOAD STATUS */
+.upload-status{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;min-height:18px;letter-spacing:0.05em;font-weight:300}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:3rem 2rem}
+@media(min-width:768px){.success-wrap{padding:4rem 3rem}}
+.success-line{width:40px;height:1px;background:var(--taupe);margin:0 auto 2rem}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--text);letter-spacing:0.05em;margin-bottom:10px}
+.success-sub{font-size:12px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:8px}
+.success-folder{display:inline-block;font-size:10px;letter-spacing:0.12em;color:var(--taupe);background:var(--taupe-light);padding:7px 16px;margin:1.25rem 0 2rem;border:1px solid rgba(168,152,128,0.3)}
+
+/* SPINNER */
+.spinner{display:inline-block;width:12px;height:12px;border:1px solid rgba(255,255,255,0.3);border-top-color:var(--white);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* DESKTOP CHECKLIST CARD */
+@media(min-width:768px){
+  .checklist-card{background:var(--white);border:1px solid var(--border);padding:1.75rem}
+  .summary-card-wrap{background:var(--white);border:1px solid var(--border);padding:1.75rem}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-eyebrow">Sistema interno · Registro fotográfico</div>
+      <div class="header-name">Dr. Miguel Soto</div>
+      <div class="header-subtitle">Cirujano Plástico Certificado</div>
+    </div>
+    <div class="header-right">
+      <svg class="monogram-svg" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="50" y="62" font-family="Cormorant Garamond,serif" font-size="72" font-weight="300" fill="white" text-anchor="middle" letter-spacing="-2">MS</text>
+      </svg>
+      <div class="header-module" id="hsub">Registro B&A</div>
+      <div class="header-step" id="hstep">Paso 1 de 3</div>
+    </div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot active" id="d1"></div>
+    <div class="step-dot" id="d2"></div>
+    <div class="step-dot" id="d3"></div>
+  </div>
+
+  <div class="main">
+
+    <!-- ══ SCREEN 1 ══ -->
+    <div class="screen visible" id="s1">
+      <!-- MOBILE -->
+      <div class="layout-1col">
+        <div class="section-label">01 — Datos del paciente</div>
+        <div class="field"><label>Apellido</label><input type="text" id="apellido" placeholder="—" oninput="chk1()"/></div>
+        <div class="field"><label>Nombre</label><input type="text" id="nombre" placeholder="—" oninput="chk1()"/></div>
+        <div class="field">
+          <label>Momento</label>
+          <div class="momento-row">
+            <button class="mbtn" id="bantes" onclick="selMom('ANTES')">Antes</button>
+            <button class="mbtn" id="bdespues" onclick="selMom('DESPUES')">Después</button>
+            <button class="mbtn" id="btpo" onclick="selMom('TPO')">Postoperatorio</button>
+          </div>
+        </div>
+        <div id="tpo-blk-m" style="display:none">
+          <div class="tpo-block"><label>Procedimiento de origen</label><select id="tpo-origen-m" onchange="syncTpo('m')"><option value="">Seleccionar...</option></select></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label-sm">Filtrar por línea</div>
+        <div class="filter-row" id="lf-m">
+          <button class="ftag on" onclick="filtrar('TODOS',this,'m')">Todos</button>
+          <button class="ftag" onclick="filtrar('CP',this,'m')">CP</button>
+          <button class="ftag" onclick="filtrar('INY',this,'m')">INY</button>
+          <button class="ftag" onclick="filtrar('ED',this,'m')">ED</button>
+          <button class="ftag" onclick="filtrar('MR',this,'m')">MR</button>
+          <button class="ftag" onclick="filtrar('TPO',this,'m')">Postoperatorio</button>
+        </div>
+        <div class="section-label-sm">Procedimientos <span class="sel-count" id="sc-m">0 seleccionados</span></div>
+        <div class="procs-list" id="pl-m"></div>
+        <button class="btn-primary" id="btn1-m" onclick="irChecklist()" disabled>Continuar</button>
+      </div>
+
+      <!-- DESKTOP -->
+      <div class="layout-2col">
+        <div class="col-left">
+          <div class="section-label">01 — Datos del paciente</div>
+          <div class="field"><label>Apellido</label><input type="text" id="apellido-d" placeholder="—" oninput="syncInput('apellido','apellido-d');chk1()"/></div>
+          <div class="field"><label>Nombre</label><input type="text" id="nombre-d" placeholder="—" oninput="syncInput('nombre','nombre-d');chk1()"/></div>
+          <div class="field">
+            <label>Momento</label>
+            <div class="momento-row">
+              <button class="mbtn" id="bantes-d" onclick="selMom('ANTES')">Antes</button>
+              <button class="mbtn" id="bdespues-d" onclick="selMom('DESPUES')">Después</button>
+              <button class="mbtn" id="btpo-d" onclick="selMom('TPO')">Postoperatorio</button>
+            </div>
+          </div>
+          <div id="tpo-blk-d" style="display:none">
+            <div class="tpo-block"><label>Procedimiento de origen</label><select id="tpo-origen-d" onchange="syncTpo('d')"><option value="">Seleccionar...</option></select></div>
+          </div>
+          <button class="btn-primary" id="btn1-d" onclick="irChecklist()" disabled>Continuar</button>
+        </div>
+        <div class="col-right">
+          <div class="section-label">Procedimientos</div>
+          <div class="filter-row" id="lf-d">
+            <button class="ftag on" onclick="filtrar('TODOS',this,'d')">Todos</button>
+            <button class="ftag" onclick="filtrar('CP',this,'d')">CP</button>
+            <button class="ftag" onclick="filtrar('INY',this,'d')">INY</button>
+            <button class="ftag" onclick="filtrar('ED',this,'d')">ED</button>
+            <button class="ftag" onclick="filtrar('MR',this,'d')">MR</button>
+            <button class="ftag" onclick="filtrar('TPO',this,'d')">Postoperatorio</button>
+          </div>
+          <div style="font-size:9px;letter-spacing:0.15em;color:var(--muted);margin-bottom:8px">
+            <span class="sel-count" id="sc-d">0 seleccionados</span>
+          </div>
+          <div class="procs-list" id="pl-d"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN 2 ══ -->
+    <div class="screen" id="s2">
+      <!-- MOBILE -->
+      <div class="layout-1col">
+        <div class="section-label">02 — Checklist fotográfico</div>
+        <div id="tpo-banner-m"></div>
+        <div class="prog-wrap"><div class="prog-fill" id="pfill-m" style="width:0%"></div></div>
+        <div class="prog-txt" id="ptxt-m">0 de 0 completados</div>
+        <div id="cl-m"></div>
+        <div class="divider"></div>
+        <div class="section-label-sm">Adjuntar archivos</div>
+        <div class="upload-zone" onclick="document.getElementById('fi').click()" ondrop="onDrop(event)" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')">
+          <input type="file" id="fi" multiple accept="image/*,video/*" onchange="onFiles(this.files)">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <p class="mobile-hint">Toca para seleccionar fotos y video<br><span style="font-size:10px">JPG · HEIC · MP4 · MOV</span></p>
+          <p class="desktop-hint">Arrastra archivos aquí o haz clic para seleccionar<br><span style="font-size:10px">JPG · HEIC · PNG · MP4 · MOV</span></p>
+        </div>
+        <div class="file-list" id="flist"></div>
+        <button class="btn-primary" id="btn2-m" onclick="irResumen()" disabled>Revisar registro</button>
+        <button class="btn-secondary" onclick="ir(1)">Regresar</button>
+      </div>
+
+      <!-- DESKTOP -->
+      <div class="layout-2col">
+        <div class="col-left checklist-card">
+          <div class="section-label">02 — Checklist fotográfico</div>
+          <div id="tpo-banner-d"></div>
+          <div class="prog-wrap"><div class="prog-fill" id="pfill-d" style="width:0%"></div></div>
+          <div class="prog-txt" id="ptxt-d">0 de 0 completados</div>
+          <div id="cl-d"></div>
+        </div>
+        <div class="col-right">
+          <div class="section-label">Adjuntar archivos</div>
+          <div class="upload-zone" id="dz-d" onclick="document.getElementById('fi').click()" ondrop="onDrop(event)" ondragover="event.preventDefault();document.getElementById('dz-d').classList.add('drag')" ondragleave="document.getElementById('dz-d').classList.remove('drag')">
+            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <p>Arrastra archivos aquí<br>o haz clic para seleccionar<br><span style="font-size:10px">JPG · HEIC · PNG · MP4 · MOV</span></p>
+          </div>
+          <div class="file-list" id="flist-d"></div>
+          <button class="btn-primary" id="btn2-d" onclick="irResumen()" disabled>Revisar registro</button>
+          <button class="btn-secondary" onclick="ir(1)">Regresar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN 3 ══ -->
+    <div class="screen" id="s3">
+      <!-- MOBILE -->
+      <div class="layout-1col">
+        <div class="section-label">03 — Confirmación</div>
+        <div class="sum-card" id="sumcard-m"></div>
+        <div class="upload-status" id="upstatus-m"></div>
+        <button class="btn-primary" id="btn3-m" onclick="enviar()">Enviar a Google Drive</button>
+        <button class="btn-secondary" onclick="ir(2)">Regresar</button>
+      </div>
+
+      <!-- DESKTOP -->
+      <div class="layout-2col">
+        <div class="col-left summary-card-wrap">
+          <div class="section-label">03 — Confirmación</div>
+          <div class="sum-card" id="sumcard-d"></div>
+          <div class="upload-status" id="upstatus-d"></div>
+          <button class="btn-primary" id="btn3-d" onclick="enviar()">Enviar a Google Drive</button>
+          <button class="btn-secondary" onclick="ir(2)">Regresar</button>
+        </div>
+        <div class="col-right" style="padding-top:3.5rem">
+          <div style="border:1px solid var(--border);padding:1.75rem">
+            <div class="section-label-sm" style="margin-bottom:1rem">Estructura en Drive</div>
+            <div style="font-size:12px;font-weight:300;color:var(--muted);line-height:2">
+              <div style="color:var(--text)">📁 Sistema B&A</div>
+              <div style="padding-left:1rem">📁 <span id="drive-paciente" style="color:var(--taupe)">PACIENTE</span></div>
+              <div style="padding-left:2rem">📁 <span id="drive-proc" style="color:var(--taupe)">PROCEDIMIENTO</span></div>
+              <div style="padding-left:3rem;font-size:10px">📸 Fotos renombradas</div>
+              <div style="padding-left:3rem;font-size:10px">🎬 Video 360°</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const BACKEND_URL='https://script.google.com/macros/s/AKfycby9SgXXvnGVwoqlsv3QCjYaxxSi0nBLN73LdGWsVUWvhVHdxmWYKEzz-iB9_By083ikWQ/exec';
+
+const PROCS=[
+  {id:'rinoplastia',l:'CP',n:'Rinoplastia',f:['Frente','OD — Oblicua Der','OI — Oblicua Izq','Lat Der','Lat Izq','Cabeza hacia atrás','Lat Der Sonriendo','Lat Izq Sonriendo','Frente Fosas Nasales']},
+  {id:'blefaroplastia',l:'CP',n:'Blefaroplastia',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Ojos Arriba','Frente Ojos Cerrados']},
+  {id:'otoplastia',l:'CP',n:'Otoplastia',f:['Frente','OD','OI','Lat Der','Lat Izq','Posterior']},
+  {id:'deepplane',l:'CP',n:'Deep plane y derivados',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo']},
+  {id:'renuvion-face',l:'CP',n:'Renuvion Face Lift / Neck Lift',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo']},
+  {id:'mentoplastia',l:'CP',n:'Mentoplastia / Implantes mandibulares',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo']},
+  {id:'bichectomia',l:'CP',n:'Bichectomía / Mucoplastia',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo']},
+  {id:'labios',l:'CP',n:'Labios',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Sonriendo','Frente Besando','Rostro Hacia Atrás']},
+  {id:'mama',l:'CP',n:'Mama aumento / Reducción / Mastopexia',f:['Frente','OD','OI','Lat Der','Lat Izq','Brazos en Jarra','Lat Der Brazos Extendidos','Lat Izq Brazos Extendidos']},
+  {id:'abdominoplastia',l:'CP',n:'Abdominoplastia',f:['Frente','OD','OI','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°']},
+  {id:'liposuccion',l:'CP',n:'Liposucción',f:['Frente','OD','OI','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°']},
+  {id:'body360',l:'CP',n:'Body360 / Tummy360 / Lipo HD',f:['Frente','OD','OI','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°']},
+  {id:'renuvion-corp',l:'CP',n:'Renuvion Corporal',f:['Frente','OD','OI','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°']},
+  {id:'lipo-muslos',l:'CP',n:'Lipo Muslos / Cara Interna / Trocánteres',f:['Frente','OD','OI','Lat Der','Lat Izq','Muslo Posterior','Frente Piernas Separadas','Posterior Piernas Separadas']},
+  {id:'lipo-brazos',l:'CP',n:'Lipo Brazos / Braquioplastia',f:['Frontal Derecha','Frontal Izquierda','Posterior Derecha','Posterior Izquierda']},
+  {id:'celfina',l:'CP',n:'Celulitis / Celfina',f:['Frente','OD','OI','Lat Der','Lat Izq','Post Glúteos Reposo','OD Glúteos Reposo','OI Glúteos Reposo','Post Glúteos Contraídos','OD Glúteos Contraídos','OI Glúteos Contraídos']},
+  {id:'toxina',l:'INY',n:'Toxina Botulínica',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Ceño Fruncido','Frente Cejas Arriba','Frente Sonriendo','Cara de Fuchi']},
+  {id:'ha-labios',l:'INY',n:'Ácido Hialurónico — Labios',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Sonriendo','Frente Besando','Rostro Hacia Atrás']},
+  {id:'ha-rellenos',l:'INY',n:'Ácido Hialurónico — Rellenos',f:['Frente','OD','OI','Lat Der','Lat Izq']},
+  {id:'bioestimuladores',l:'INY',n:'Bioestimuladores',f:['Frente','OD','OI','Lat Der','Lat Izq']},
+  {id:'endolifting-facial',l:'ED',n:'Endolifting / Morpheus8 / Ultherapy Facial',f:['Frente','OD','OI','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo']},
+  {id:'endolifting-corp',l:'ED',n:'Endolifting Corporal',f:['Frente','OD','OI','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°']},
+  {id:'spectra',l:'ED',n:'Spectra / eCO2',f:['Frente','OD','OI','Lat Der','Lat Izq']},
+  {id:'prp-facial',l:'MR',n:'PRP / Exosomas / Factores Crecimiento Facial',f:['Frente','OD','OI','Lat Der','Lat Izq']},
+  {id:'prp-corp',l:'MR',n:'PRP / Exosomas Corporal',f:['Frente','OD','OI','Lat Der','Lat Izq','Posterior']},
+  {id:'fibrosis',l:'TPO',n:'Fibrosis Zero / PRUC',f:[]},
+  {id:'laser-cicatriz',l:'TPO',n:'Láser Cicatriz / Cuidado de Cicatriz',f:[]},
+];
+const TPO_IDS=new Set(['fibrosis','laser-cicatriz']);
+
+let selProcs=new Set(),mom='',tpoOrigen='',checkState={},archivos=[],filtroM='TODOS',filtroD='TODOS';
+
+
+
+// ── SYNC HELPERS ──
+function syncInput(baseId,srcId){document.getElementById(baseId).value=document.getElementById(srcId).value;}
+function syncTpo(src){
+  const val=document.getElementById('tpo-origen-'+src).value;
+  tpoOrigen=val;
+  const other=src==='m'?'d':'m';
+  const otherEl=document.getElementById('tpo-origen-'+other);
+  if(otherEl)otherEl.value=val;
+  chk1();
+}
+
+// Drive se maneja en el backend (Apps Script)
+
+// ── PROCS ──
+function renderProcs(f,variant){
+  const list=document.getElementById('pl-'+variant);
+  if(!list)return;
+  list.innerHTML='';
+  PROCS.filter(p=>f==='TODOS'||p.l===f).forEach(p=>{
+    const isTpo=TPO_IDS.has(p.id);
+    const d=document.createElement('div');
+    d.className='proc-item'+(selProcs.has(p.id)?' sel':'')+(isTpo?' is-tpo':'');
+    d.innerHTML=`<div class="pcheck"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 3L9 1" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="pname">${p.n}</div><span class="pbadge">${p.l}</span>`;
+    d.onclick=()=>{
+      selProcs.has(p.id)?selProcs.delete(p.id):selProcs.add(p.id);
+      ['m','d'].forEach(v=>renderProcs(v==='m'?filtroM:filtroD,v));
+      const cnt=selProcs.size+(selProcs.size===1?' seleccionado':' seleccionados');
+      ['m','d'].forEach(v=>{const el=document.getElementById('sc-'+v);if(el)el.textContent=cnt;});
+      chk1();
+    };
+    list.appendChild(d);
+  });
+}
+function filtrar(f,el,variant){
+  if(variant==='m')filtroM=f; else filtroD=f;
+  const container=document.getElementById('lf-'+variant);
+  container.querySelectorAll('.ftag').forEach(t=>t.classList.remove('on','tpo-on'));
+  el.classList.add(f==='TPO'?'tpo-on':'on');
+  renderProcs(f,variant);
+}
+
+function selMom(m){
+  mom=m;
+  ['antes','despues','tpo'].forEach(k=>{
+    ['','--d'].forEach(s=>{const el=document.getElementById('b'+k+(s===''?'':'-d'));if(el)el.className='mbtn';});
+    document.getElementById('b'+k).className='mbtn';
+    const de=document.getElementById('b'+k+'-d');if(de)de.className='mbtn';
+  });
+  ['bantes','bdespues','btpo'].forEach(k=>{
+    const key=k.replace('b','');
+    const cls='sel-'+key;
+    if(k==='b'+m.toLowerCase()){
+      document.getElementById(k).classList.add(cls);
+      const de=document.getElementById(k+'-d');if(de)de.classList.add(cls);
+    }
+  });
+  const show=m==='TPO';
+  ['m','d'].forEach(v=>{
+    const blk=document.getElementById('tpo-blk-'+v);
+    if(!blk)return;
+    blk.style.display=show?'block':'none';
+    if(show)poblarTpoOrigen(v);
+  });
+  if(!show)tpoOrigen='';
+  chk1();
+}
+
+function poblarTpoOrigen(v){
+  const sel=document.getElementById('tpo-origen-'+v);
+  if(!sel)return;
+  sel.innerHTML='<option value="">Seleccionar procedimiento de origen...</option>';
+  PROCS.filter(p=>!TPO_IDS.has(p.id)).forEach(p=>{
+    const o=document.createElement('option');
+    o.value=p.id;o.textContent=p.n+' ('+p.l+')';sel.appendChild(o);
+  });
+}
+
+function chk1(){
+  const ap=(document.getElementById('apellido').value||document.getElementById('apellido-d')?.value||'').trim();
+  const nm=(document.getElementById('nombre').value||document.getElementById('nombre-d')?.value||'').trim();
+  const ok=ap&&nm&&mom&&selProcs.size>0&&(mom!=='TPO'||tpoOrigen);
+  ['btn1-m','btn1-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!ok;});
+}
+
+function getFotos(id){
+  if(TPO_IDS.has(id)&&tpoOrigen){const o=PROCS.find(p=>p.id===tpoOrigen);return o?o.f:[];}
+  const p=PROCS.find(x=>x.id===id);return p?p.f:[];
+}
+
+function irChecklist(){
+  const ap=getAp(),nm=getNm();
+  const proc0names=[...selProcs].map(id=>PROCS.find(p=>p.id===id)?.n).filter(Boolean);
+  ['m','d'].forEach(v=>{
+    const banner=document.getElementById('tpo-banner-'+v);
+    if(!banner)return;
+    if(mom==='TPO'&&tpoOrigen){
+      const o=PROCS.find(p=>p.id===tpoOrigen);
+      banner.innerHTML=`<div class="tpo-banner">Proyecciones de: <strong>${o.n}</strong></div>`;
+    }else{banner.innerHTML='';}
+  });
+  const allF=new Set();
+  selProcs.forEach(id=>getFotos(id).forEach(f=>allF.add(f)));
+  const items=[...[...allF].map(f=>({lbl:f,vid:false})),{lbl:'Video 360° — 1 vuelta completa (~15-20 seg)',vid:true}];
+  checkState={};items.forEach(it=>checkState[it.lbl]=false);
+  ['m','d'].forEach(v=>{
+    const cont=document.getElementById('cl-'+v);
+    if(!cont)return;
+    cont.innerHTML='';
+    const sf=document.createElement('div');sf.className='cl-section';
+    sf.innerHTML=`<div class="cl-sec-title">Fotografías <span style="font-size:8px;color:var(--muted)">${items.filter(i=>!i.vid).length} tomas</span></div>`;
+    items.filter(i=>!i.vid).forEach(it=>sf.appendChild(mkCI(it,v)));
+    cont.appendChild(sf);
+    const sv=document.createElement('div');sv.className='cl-section';
+    sv.innerHTML=`<div class="cl-sec-title vid">Video 360°</div>`;
+    items.filter(i=>i.vid).forEach(it=>sv.appendChild(mkCI(it,v)));
+    cont.appendChild(sv);
+  });
+  updProg();ir(2);
+}
+
+function mkCI(it,variant){
+  const d=document.createElement('div');
+  d.className='cl-item'+(it.vid?' is-vid':'')+(checkState[it.lbl]?' done':'');
+  d.dataset.k=it.lbl;d.dataset.v=variant;
+  d.innerHTML=`<div class="cl-box"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 3L9 1" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="cl-label${it.vid?' vid':''}">${it.lbl}</span>`;
+  d.onclick=()=>{
+    checkState[it.lbl]=!checkState[it.lbl];
+    document.querySelectorAll(`.cl-item[data-k="${CSS.escape(it.lbl)}"]`).forEach(el=>el.classList.toggle('done',checkState[it.lbl]));
+    updProg();
+  };
+  return d;
+}
+
+function updProg(){
+  const tot=Object.keys(checkState).length;
+  const don=Object.values(checkState).filter(Boolean).length;
+  const pct=tot?Math.round(don/tot*100):0;
+  ['m','d'].forEach(v=>{
+    const pf=document.getElementById('pfill-'+v);const pt=document.getElementById('ptxt-'+v);
+    if(pf)pf.style.width=pct+'%';
+    if(pt)pt.textContent=`${don} de ${tot} completados`;
+  });
+  const ok=don>=tot&&archivos.length>0;
+  ['btn2-m','btn2-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!ok;});
+}
+
+function onFiles(files){
+  [...files].forEach(f=>{if(!archivos.find(x=>x.name===f.name))archivos.push(f);});
+  renderFiles();
+}
+function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('drag');onFiles(e.dataTransfer.files);}
+function renderFiles(){
+  ['flist','flist-d'].forEach(id=>{
+    const fl=document.getElementById(id);if(!fl)return;fl.innerHTML='';
+    archivos.forEach((f,i)=>{
+      const c=document.createElement('div');c.className='file-chip';
+      const icon=f.type.startsWith('video')?'▶':'◼';
+      c.innerHTML=`<span class="ficon">${icon}</span><span class="fname">${f.name}</span><span class="fsize">${(f.size/1024/1024).toFixed(1)}MB</span><span class="rm" onclick="rmFile(${i})">×</span>`;
+      fl.appendChild(c);
+    });
+  });
+  updProg();
+}
+function rmFile(i){archivos.splice(i,1);renderFiles();}
+
+function getAp(){return(document.getElementById('apellido-d')?.value||document.getElementById('apellido').value||'').trim();}
+function getNm(){return(document.getElementById('nombre-d')?.value||document.getElementById('nombre').value||'').trim();}
+
+function irResumen(){
+  const ap=getAp(),nm=getNm();
+  const pnames=[...selProcs].map(id=>PROCS.find(p=>p.id===id)?.n).filter(Boolean);
+  const fecha=new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'');
+  const proc0=pnames[0]||'';
+  const badges={ANTES:'b-antes',DESPUES:'b-despues',TPO:'b-tpo'};
+  let origenRow='';
+  if(mom==='TPO'&&tpoOrigen){const o=PROCS.find(p=>p.id===tpoOrigen);origenRow=`<div class="sum-row"><span class="sum-label">Proc. origen</span><span class="sum-val">${o.n}</span></div>`;}
+  const html=`
+    <div class="sum-row"><span class="sum-label">Paciente</span><span class="sum-val">${ap} ${nm}</span></div>
+    <div class="sum-row"><span class="sum-label">Momento</span><span class="sum-val"><span class="badge ${badges[mom]}">${mom}</span></span></div>
+    ${origenRow}
+    <div class="sum-row"><span class="sum-label">Procedimientos</span><span class="sum-val">${pnames.join('<br>')}</span></div>
+    <div class="sum-row"><span class="sum-label">Archivos</span><span class="sum-val">${archivos.length} archivo(s)</span></div>
+    <div class="sum-row"><span class="sum-label">Fecha</span><span class="sum-val">${fecha}</span></div>`;
+  ['sumcard-m','sumcard-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+  const pac=ap.toUpperCase().replace(/\s+/g,'_')+'_'+nm.toUpperCase().replace(/\s+/g,'_');
+  const pr=proc0.toUpperCase().replace(/[^A-Z0-9]/g,'_').substring(0,25);
+  const dp=document.getElementById('drive-paciente');const dpr=document.getElementById('drive-proc');
+  if(dp)dp.textContent=pac;if(dpr)dpr.textContent=pr;
+  ir(3);
+}
+
+async function enviar(){
+  ['btn3-m','btn3-d'].forEach(id=>{const el=document.getElementById(id);if(el){el.disabled=true;el.innerHTML='<span class="spinner"></span>Subiendo a Drive...'}});
+  const setStatus=t=>{['upstatus-m','upstatus-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});};
+  try{
+    const ap=getAp();
+    const nm=getNm();
+    const pnames=[...selProcs].map(id=>PROCS.find(p=>p.id===id)?.n).filter(Boolean);
+
+    setStatus('Preparando archivos...');
+
+    // Convertir archivos a base64
+    const archivosB64=[];
+    for(let i=0;i<archivos.length;i++){
+      const file=archivos[i];
+      setStatus(`Preparando archivo ${i+1} de ${archivos.length}...`);
+      const b64=await fileToBase64(file);
+      archivosB64.push({nombre:file.name,mimeType:file.type,base64:b64});
+    }
+
+    setStatus('Enviando a Google Drive...');
+
+    const procIds=[...selProcs];
+    const payload={
+      action:'upload',
+      apellido:ap,
+      nombre:nm,
+      momento:mom,
+      procedimientos:pnames,
+      procIds:procIds,
+      tpoOrigenId:tpoOrigen,
+      archivos:archivosB64
+    };
+
+    // Usar XMLHttpRequest para compatibilidad con file:// y evitar CORS preflight
+    const result = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', BACKEND_URL, true);
+      xhr.setRequestHeader('Content-Type', 'text/plain'); // evita preflight CORS
+      xhr.onload = () => {
+        try { resolve(JSON.parse(xhr.responseText)); }
+        catch(e) { reject(new Error('Respuesta inválida del servidor')); }
+      };
+      xhr.onerror = () => reject(new Error('Error de conexión con el servidor'));
+      xhr.send(JSON.stringify(payload));
+    });
+
+    if(!result.success)throw new Error(result.error||'Error desconocido');
+
+    const paciente=result.paciente;
+    const proc0=result.procedimiento;
+    const linea=result.linea;
+    const uploaded=result.archivosSubidos;
+    const carpeta=result.carpeta;
+
+    const successHTML=`
+      <div class="success-wrap">
+        <div class="success-line"></div>
+        <div class="success-title">Registro completado</div>
+        <div class="success-sub">${uploaded} archivo(s) enviado(s) a Google Drive</div>
+        <div class="success-folder">📁 ${carpeta}</div>
+        <button class="btn-primary" onclick="reset()">Nuevo registro</button>
+      </div>`;
+    document.getElementById('s3').innerHTML=`<div class="layout-1col">${successHTML}</div><div class="layout-2col"><div class="col-left">${successHTML}</div><div class="col-right"></div></div>`;
+
+  }catch(err){
+    ['btn3-m','btn3-d'].forEach(id=>{const el=document.getElementById(id);if(el){el.disabled=false;el.innerHTML='Enviar a Google Drive';}});
+    setStatus('Error: '+err.message);
+  }
+}
+
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result.split(',')[1]);
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function ir(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('visible'));
+  document.getElementById('s'+n).classList.add('visible');
+  const mods=['Registro B&A','Checklist fotográfico','Confirmación'];
+  const steps=['Paso 1 de 3','Paso 2 de 3','Paso 3 de 3'];
+  document.getElementById('hsub').textContent=mods[n-1];
+  document.getElementById('hstep').textContent=steps[n-1];
+  for(let i=1;i<=3;i++){const d=document.getElementById('d'+i);d.classList.remove('active','done');if(i<n)d.classList.add('done');else if(i===n)d.classList.add('active');}
+  window.scrollTo(0,0);
+}
+
+function reset(){
+  selProcs.clear();mom='';tpoOrigen='';checkState={};archivos=[];filtroM='TODOS';filtroD='TODOS';
+  ['apellido','nombre','apellido-d','nombre-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['antes','despues','tpo'].forEach(k=>{
+    [document.getElementById('b'+k),document.getElementById('b'+k+'-d')].forEach(el=>{if(el)el.className='mbtn';});
+  });
+  ['tpo-blk-m','tpo-blk-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ['sc-m','sc-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0 seleccionados';});
+  ['flist','flist-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='';});
+  ['m','d'].forEach(v=>{
+    const lf=document.getElementById('lf-'+v);
+    if(lf)lf.querySelectorAll('.ftag').forEach((t,i)=>{t.classList.remove('on','tpo-on');if(i===0)t.classList.add('on');});
+    renderProcs('TODOS',v);
+  });
+  ir(1);chk1();
+}
+
+checkToken();
+renderProcs('TODOS','m');
+renderProcs('TODOS','d');
+</script>
+</body>
+</html>
