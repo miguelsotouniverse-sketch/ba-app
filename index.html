@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>B&A — Dr. Miguel Soto Universe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async></script>
+<style>
+:root{
+  --black:#030707;--taupe:#A19487;--cream:#E9E6E1;--cream2:#F4F2F1;--white:#FFFFFF;
+  --taupe-mid:#C0B8B0;--taupe-light:#D8D3CD;--success:#2D6A4F;--error:#7A1E1E;--violet:#7B6FA0;
+  --fb:'Jost','Helvetica Neue',sans-serif;--fd:'Cormorant Garamond',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--cream2);font-family:var(--fb);color:var(--black)}
+.screen{display:none;flex-direction:column;min-height:100vh}
+.screen.active{display:flex}
+.hdr{background:var(--black);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-shrink:0}
+.hdr-left{display:flex;flex-direction:column;gap:2px}
+.hdr-tag{font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--taupe);font-weight:300}
+.hdr-step{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--white);font-weight:300}
+.hdr-mono{display:flex;align-items:center;justify-content:center}
+.hdr-mono img{height:30px;width:auto;display:block}
+.hdr-right{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--taupe);text-align:right;line-height:1.6}
+.progress-track{height:2px;background:rgba(161,148,135,.25);flex-shrink:0}
+.progress-fill{height:2px;background:var(--taupe);transition:width .4s ease}
+.body{flex:1;padding:22px 16px 48px;max-width:520px;margin:0 auto;width:100%}
+.ptitle{font-family:var(--fd);font-size:24px;font-weight:300;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ptitle-sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--taupe);font-weight:300;font-family:var(--fb)}
+.psub{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--taupe);font-weight:300;margin-bottom:22px}
+.card{background:var(--white);border-radius:10px;padding:18px 16px;margin-bottom:12px;border:1px solid var(--cream)}
+.card-title{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--taupe);font-weight:400;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.badge{background:var(--taupe);color:var(--white);border-radius:20px;font-size:9px;padding:2px 8px;letter-spacing:.04em;font-weight:400;min-width:20px;text-align:center}
+.search-row{display:flex;gap:8px}
+input[type=text]{flex:1;width:100%;padding:12px 14px;border:1px solid var(--cream);border-radius:7px;font-size:15px;font-family:var(--fb);font-weight:300;background:var(--cream2);color:var(--black);outline:none;transition:border-color .2s;-webkit-appearance:none}
+input[type=text]:focus{border-color:var(--taupe)}
+input[type=text]::placeholder{color:var(--taupe-light)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--taupe-light);border-top-color:var(--taupe);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.status{font-size:12px;letter-spacing:.04em;color:var(--taupe);margin-top:14px;text-align:center;min-height:18px;line-height:1.5}
+.status.err{color:var(--error)}
+.results{margin-top:6px}
+.result{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 14px;border:1px solid var(--cream);border-radius:8px;background:var(--cream2);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.result:active{background:var(--cream)}
+.result-name{font-size:14px;font-weight:300;letter-spacing:.01em;line-height:1.3}
+.result-dob{font-size:11px;color:var(--taupe);letter-spacing:.04em;margin-top:3px}
+.result-arrow{color:var(--taupe);font-size:18px;flex-shrink:0}
+.pat-banner{background:var(--white);border:1px solid var(--taupe-light);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pat-banner .pn{font-family:var(--fd);font-size:18px;font-weight:400;line-height:1.2}
+.pat-banner .pd{font-size:10px;color:var(--taupe);letter-spacing:.05em;margin-top:2px}
+.pat-banner .pchg{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--taupe);text-decoration:underline;cursor:pointer;flex-shrink:0}
+.grp-label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe-mid);font-weight:400;margin:12px 0 7px}
+.grp-label:first-child{margin-top:0}
+.chip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.chip{padding:9px 10px;border:1px solid var(--cream);border-radius:5px;font-size:11px;font-weight:300;cursor:pointer;transition:all .15s;background:var(--cream2);color:var(--black);text-align:center;user-select:none;-webkit-user-select:none;line-height:1.3}
+.chip.on{background:var(--black);color:var(--white);border-color:var(--black)}
+.chip.dim{opacity:.32;pointer-events:none}
+.tpo-note{font-size:10px;color:var(--violet);letter-spacing:.03em;margin-top:8px;line-height:1.5;font-style:italic}
+.momento-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mbtn{padding:13px 6px;border:1px solid var(--cream);border-radius:5px;font-size:11px;font-weight:300;cursor:pointer;background:var(--cream2);color:var(--black);text-align:center;transition:all .15s;user-select:none;font-family:var(--fb);line-height:1.3}
+.mbtn.on{background:var(--black);color:var(--white);border-color:var(--black)}
+.locked-moment{padding:13px 12px;border:1px dashed var(--violet);border-radius:6px;background:#F5F3FA;color:var(--violet);font-size:12px;letter-spacing:.04em;text-align:center;line-height:1.5}
+.proc-block{margin-bottom:18px}
+.proc-head{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--black);font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.proc-cat{font-size:8px;letter-spacing:.08em;background:var(--taupe);color:var(--white);padding:2px 7px;border-radius:10px}
+.proc-sub{font-size:10px;color:var(--taupe);letter-spacing:.04em;margin-bottom:10px}
+.chk-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:6px;margin-bottom:6px;cursor:pointer;border:1px solid var(--cream);background:var(--cream2);transition:all .15s;user-select:none;-webkit-user-select:none}
+.chk-item.done{background:var(--cream);border-color:var(--taupe-light)}
+.chk-item.video{border-color:var(--violet);background:#F5F3FA}
+.chk-item.video.done{background:#EAE7F2}
+.chk-box{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--taupe-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:var(--white)}
+.chk-item.done .chk-box{background:var(--black);border-color:var(--black)}
+.chk-item.video .chk-box{border-color:var(--violet)}
+.chk-item.video.done .chk-box{background:var(--violet);border-color:var(--violet)}
+.chk-check{color:var(--white);font-size:11px;display:none}
+.chk-item.done .chk-check{display:block}
+.chk-text{flex:1;font-size:13px;font-weight:300;letter-spacing:.02em;line-height:1.3}
+.chk-item.done .chk-text{color:var(--taupe);text-decoration:line-through}
+.chk-vid-badge{font-size:8px;letter-spacing:.08em;padding:2px 6px;border-radius:3px;background:var(--violet);color:var(--white);flex-shrink:0}
+.chk-note{font-size:10px;color:var(--taupe-mid);letter-spacing:.04em;margin-top:2px;font-style:italic;padding-left:2px}
+.chk-counter{text-align:center;padding:12px;background:var(--cream);border-radius:8px;font-size:12px;letter-spacing:.06em;color:var(--taupe);margin-bottom:16px}
+.chk-counter strong{color:var(--black)}
+.up-proc-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.up-tab{padding:7px 12px;border:1px solid var(--cream);border-radius:20px;font-size:11px;font-weight:300;background:var(--cream2);color:var(--taupe);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.up-tab.active{background:var(--black);color:var(--white);border-color:var(--black)}
+.up-tab.complete{border-color:var(--success)}
+.up-tab .dot{width:6px;height:6px;border-radius:50%;background:var(--taupe-light)}
+.up-tab.active .dot{background:var(--white)}
+.up-tab.complete .dot{background:var(--success)}
+.req-bar{display:flex;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+.req-pill{font-size:11px;letter-spacing:.03em;padding:6px 12px;border-radius:8px;background:var(--cream2);border:1px solid var(--cream);color:var(--taupe);display:flex;align-items:center;gap:6px}
+.req-pill.ok{border-color:var(--success);color:var(--success);background:#EAF3EE}
+.req-pill.bad{border-color:var(--error);color:var(--error);background:#F6ECEC}
+.req-pill.opt{border-color:#b8860b;color:#8a6d0b;background:#FBF6EA}
+.req-pill b{font-weight:500}
+.upload-zone{border:1.5px dashed var(--taupe-light);border-radius:10px;padding:26px 16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--cream2);position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--taupe);background:var(--cream)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0}
+.upload-icon{font-size:22px;margin-bottom:7px}
+.upload-text{font-size:12px;color:var(--taupe);letter-spacing:.06em;font-weight:300}
+.upload-hint{font-size:10px;color:var(--taupe-light);margin-top:4px;letter-spacing:.04em}
+.preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.thumb{position:relative;aspect-ratio:1;border-radius:5px;overflow:hidden;background:var(--cream)}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.thumb-del{position:absolute;top:3px;right:3px;background:rgba(3,7,7,.72);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.thumb-vid{position:absolute;bottom:3px;left:3px;background:rgba(123,111,160,.85);color:#fff;font-size:8px;padding:2px 5px;border-radius:3px;letter-spacing:.06em}
+.thumb-num{position:absolute;bottom:3px;right:3px;background:rgba(3,7,7,.7);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px}
+.summary-row{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--cream)}
+.summary-row:last-child{border-bottom:none}
+.summary-key{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--taupe);font-weight:400;max-width:48%}
+.summary-val{font-size:13px;font-weight:300;color:var(--black);text-align:right;max-width:62%}
+.summary-moment{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:400;background:var(--black);color:var(--white)}
+.btn{width:100%;padding:15px;border:none;border-radius:8px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-family:var(--fb);font-weight:400;cursor:pointer;transition:opacity .2s}
+.btn-primary{background:var(--black);color:var(--white)}
+.btn-primary:disabled{opacity:.32;cursor:not-allowed}
+.btn-primary:not(:disabled):hover{opacity:.82}
+.btn-secondary{background:transparent;color:var(--taupe);border:1px solid var(--taupe-light);margin-top:10px}
+.btn-secondary:hover{background:var(--cream)}
+.btn-row{margin-top:8px}
+.uprog{display:none;margin-top:12px}
+.uprog-bg{background:var(--cream);border-radius:3px;height:3px;overflow:hidden}
+.uprog-fill{height:100%;background:var(--taupe);border-radius:3px;transition:width .3s;width:0%}
+.uprog-label{font-size:10px;color:var(--taupe);margin-top:6px;letter-spacing:.06em;text-align:center}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);padding:11px 22px;border-radius:40px;font-size:12px;letter-spacing:.06em;transition:transform .3s,opacity .3s;opacity:0;z-index:999;max-width:90vw;text-align:center;background:var(--black);color:var(--white);line-height:1.4}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+#toast.ok{background:var(--success)}
+#toast.err{background:var(--error)}
+.success-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.success-icon{font-size:48px;margin-bottom:20px}
+.success-title{font-family:var(--fd);font-size:28px;font-weight:300;letter-spacing:.06em;margin-bottom:10px}
+.success-sub{font-size:12px;letter-spacing:.08em;color:var(--taupe);font-weight:300;line-height:1.7}
+.success-path{margin:18px 0;padding:14px 16px;background:var(--cream);border-radius:8px;font-size:11px;letter-spacing:.04em;color:var(--taupe);line-height:1.9;border:1px solid var(--taupe-light);max-width:380px;word-break:break-word}
+#auth-gate{position:fixed;inset:0;z-index:1000;background:var(--cream2);display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{background:var(--white);border:1px solid var(--cream);border-radius:14px;max-width:360px;width:100%;padding:40px 28px;text-align:center;box-shadow:0 18px 50px rgba(3,7,7,.08)}
+.auth-tag{font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--taupe);font-weight:300}
+.auth-logo{display:flex;justify-content:center;margin:12px 0 18px}
+.auth-logo img{height:64px;width:auto;display:block}
+.auth-title{font-family:var(--fd);font-size:23px;font-weight:300;letter-spacing:.05em;color:var(--black);margin-bottom:10px}
+.auth-sub{font-size:12px;line-height:1.6;color:var(--taupe);margin-bottom:24px}
+.auth-btn{display:flex;justify-content:center;margin-bottom:14px;min-height:44px}
+.auth-status{font-size:11.5px;line-height:1.5;color:var(--taupe);min-height:16px}
+.auth-status.err{color:var(--error)}
+.user-strip{font-size:9px;letter-spacing:.06em;color:var(--taupe-mid);text-align:right;padding:8px 16px 0;max-width:520px;margin:0 auto}
+.user-strip a{color:var(--taupe);cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div id="auth-gate">
+  <div class="auth-card">
+    <span class="auth-tag">Sistema B&amp;A</span>
+    <div class="auth-logo"><img src="logo_sm_negro.png" alt="Dr. Miguel Soto"></div>
+    <div class="auth-title">Acceso restringido</div>
+    <div class="auth-sub">Inicia sesión con una cuenta autorizada de Dr. Miguel Soto Universe para continuar.</div>
+    <div id="gbtn" class="auth-btn"></div>
+    <div id="auth-status" class="auth-status"></div>
+  </div>
+</div>
+
+<div class="user-strip" id="user-strip"></div>
+
+<!-- SCREEN 1: BUSCAR -->
+<div class="screen active" id="s1">
+  <div class="hdr">
+    <div class="hdr-left"><span class="hdr-tag">Sistema B&amp;A</span><span class="hdr-step">Paso 1 — Paciente</span></div>
+    <div class="hdr-mono"><img src="logo_sm_blanco.png" alt="MS"></div>
+    <div class="hdr-right">Dr. Miguel Soto<br>Cirujano Plástico</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:25%"></div></div>
+  <div class="body">
+    <div class="ptitle">Buscar paciente</div>
+    <div class="psub">Base de datos · solo lectura</div>
+    <div class="card">
+      <div class="card-title">Nombre del paciente</div>
+      <div class="search-row">
+        <input type="text" id="q" placeholder="Escribe apellido o nombre…" autocomplete="off">
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="results" id="results"></div>
+  </div>
+</div>
+
+<!-- SCREEN 2: PROCEDIMIENTO + MOMENTO -->
+<div class="screen" id="s2">
+  <div class="hdr">
+    <div class="hdr-left"><span class="hdr-tag">Sistema B&amp;A</span><span class="hdr-step">Paso 2 — Procedimiento</span></div>
+    <div class="hdr-mono"><img src="logo_sm_blanco.png" alt="MS"></div>
+    <div class="hdr-right">Dr. Miguel Soto<br>Cirujano Plástico</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+  <div class="body">
+    <div class="pat-banner" id="pat-banner-2"></div>
+    <div class="ptitle">Procedimiento y momento</div>
+    <div class="psub" style="margin-bottom:14px">Selecciona uno o varios</div>
+    <div class="card">
+      <div class="card-title">Procedimiento(s) <span class="badge" id="pc">0</span></div>
+      <div class="grp-label">Cirugía Plástica</div>
+      <div class="chip-grid">
+        <div class="chip" data-id="rinoplastia">Rinoplastia</div>
+        <div class="chip" data-id="blefaroplastia">Blefaroplastia</div>
+        <div class="chip" data-id="otoplastia">Otoplastia</div>
+        <div class="chip" data-id="deepplane">Deep Plane y derivados</div>
+        <div class="chip" data-id="renuvion-face">Renuvion Face/Neck Lift</div>
+        <div class="chip" data-id="mentoplastia">Mentoplastia / Mandíbula</div>
+        <div class="chip" data-id="bichectomia">Bichectomía / Mucoplastia</div>
+        <div class="chip" data-id="labios">Labios</div>
+        <div class="chip" data-id="mama">Mama / Mastopexia</div>
+        <div class="chip" data-id="abdominoplastia">Abdominoplastia</div>
+        <div class="chip" data-id="liposuccion">Liposucción</div>
+        <div class="chip" data-id="body360">Body360 / Tummy360 / Lipo HD</div>
+        <div class="chip" data-id="ribxcar">RibXcar</div>
+        <div class="chip" data-id="renuvion-corp">Renuvion Corporal</div>
+        <div class="chip" data-id="lipo-muslos">Lipo Muslos / Trocánteres</div>
+        <div class="chip" data-id="lipo-brazos">Lipo Brazos / Braquioplastia</div>
+        <div class="chip" data-id="celfina">Celulitis / Celfina</div>
+      </div>
+      <div class="grp-label">Inyectables</div>
+      <div class="chip-grid">
+        <div class="chip" data-id="toxina">Toxina Botulínica</div>
+        <div class="chip" data-id="ha-labios">HA Labios</div>
+        <div class="chip" data-id="ha-rellenos">HA Rellenos Faciales</div>
+        <div class="chip" data-id="bioestimuladores">Bioestimuladores</div>
+      </div>
+      <div class="grp-label">Energy Devices</div>
+      <div class="chip-grid">
+        <div class="chip" data-id="endolifting-facial">Endolifting Facial / Morpheus8 / Ultherapy</div>
+        <div class="chip" data-id="endolifting-corp">Endolifting Corporal</div>
+        <div class="chip" data-id="spectra">Spectra / eCO2</div>
+        <div class="chip" data-id="laser-cicatriz">Láser / Cuidado de Cicatriz</div>
+      </div>
+      <div class="grp-label">Medicina Regenerativa</div>
+      <div class="chip-grid">
+        <div class="chip" data-id="prp-facial">PRP / Exosomas Facial</div>
+        <div class="chip" data-id="prp-corp">PRP / Exosomas Corporal</div>
+      </div>
+      <div class="grp-label">Terapia Postoperatoria</div>
+      <div class="chip-grid">
+        <div class="chip" data-id="fibrosis">Fibrosis Zero / PRUC</div>
+      </div>
+      <div class="tpo-note" id="tpo-note" style="display:none">La Terapia Postoperatoria va sola y siempre es Post. Indica abajo de qué procedimiento(s) proviene.</div>
+    </div>
+
+    <!-- Origen TPO (solo aparece si se elige Fibrosis) -->
+    <div class="card" id="tpo-origen-card" style="display:none">
+      <div class="card-title">Procedimiento(s) de origen <span class="badge" id="tpo-oc">0</span></div>
+      <div class="proc-sub" style="margin-bottom:10px">¿De qué cirugía/procedimiento es esta terapia? Hereda sus proyecciones.</div>
+      <div class="grp-label">Cirugía Plástica</div>
+      <div class="chip-grid" id="tpo-origen-grid"></div>
+    </div>
+
+    <!-- Momento (se oculta cuando es TPO) -->
+    <div class="card" id="momento-card">
+      <div class="card-title">Momento</div>
+      <div class="momento-grid">
+        <button class="mbtn" data-val="Pre">Preoperatorio (Pre)</button>
+        <button class="mbtn" data-val="Marcaje">Marcaje quirúrgico</button>
+        <button class="mbtn" data-val="Post">Postoperatorio (Post)</button>
+      </div>
+    </div>
+    <div class="card" id="momento-locked" style="display:none">
+      <div class="card-title">Momento</div>
+      <div class="locked-moment">Terapia Postoperatoria → siempre <b>Post</b></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn2" disabled>Continuar a checklist →</button>
+      <button class="btn btn-secondary" onclick="goTo(1)">← Cambiar paciente</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: CHECKLIST -->
+<div class="screen" id="s3">
+  <div class="hdr">
+    <div class="hdr-left"><span class="hdr-tag">Sistema B&amp;A</span><span class="hdr-step">Paso 3 — Checklist</span></div>
+    <div class="hdr-mono"><img src="logo_sm_blanco.png" alt="MS"></div>
+    <div class="hdr-right">Dr. Miguel Soto<br>Cirujano Plástico</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:70%"></div></div>
+  <div class="body">
+    <div class="pat-banner" id="pat-banner-3"></div>
+    <div class="ptitle">Proyecciones</div>
+    <div class="psub">Marca las tomas conforme las realizas</div>
+    <div class="chk-counter" id="chk-counter">0 de 0 proyecciones marcadas</div>
+    <div id="chklist"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn3">Continuar a fotos →</button>
+      <button class="btn btn-secondary" onclick="goTo(2)">← Regresar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: FOTOS -->
+<div class="screen" id="s4">
+  <div class="hdr">
+    <div class="hdr-left"><span class="hdr-tag">Sistema B&amp;A</span><span class="hdr-step">Paso 4 — Fotos</span></div>
+    <div class="hdr-mono"><img src="logo_sm_blanco.png" alt="MS"></div>
+    <div class="hdr-right">Dr. Miguel Soto<br>Cirujano Plástico</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:88%"></div></div>
+  <div class="body">
+    <div class="pat-banner" id="pat-banner-4"></div>
+    <div class="ptitle">Adjuntar archivos</div>
+    <div class="psub" id="s4-sub">Procedimiento por procedimiento</div>
+    <div class="up-proc-tabs" id="up-tabs"></div>
+    <div class="card">
+      <div class="card-title" id="up-current-title">Fotos y video</div>
+      <div class="req-bar" id="req-bar"></div>
+      <div class="upload-zone" id="dz">
+        <input type="file" id="fi" multiple accept="image/*,video/*">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">Toca para seleccionar fotos o videos</div>
+        <div class="upload-hint">JPG · PNG · HEIC · MP4 · MOV — se numeran en orden · máx. 40 MB c/u</div>
+      </div>
+      <div class="preview-grid" id="pg"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn4" disabled>Revisar y enviar →</button>
+      <button class="btn btn-secondary" onclick="goTo(3)">← Regresar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 5: RESUMEN -->
+<div class="screen" id="s5">
+  <div class="hdr">
+    <div class="hdr-left"><span class="hdr-tag">Sistema B&amp;A</span><span class="hdr-step">Paso 5 — Enviar</span></div>
+    <div class="hdr-mono"><img src="logo_sm_blanco.png" alt="MS"></div>
+    <div class="hdr-right">Dr. Miguel Soto<br>Cirujano Plástico</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+  <div class="body">
+    <div class="ptitle">Resumen</div>
+    <div class="psub">Revisa antes de subir a Drive</div>
+    <div class="card"><div id="summary"></div></div>
+    <div class="uprog" id="uprog">
+      <div class="uprog-bg"><div class="uprog-fill" id="uf"></div></div>
+      <div class="uprog-label" id="ul">Preparando…</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn5">Subir a Drive ↑</button>
+      <button class="btn btn-secondary" onclick="goTo(4)">← Regresar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 6: ÉXITO -->
+<div class="screen" id="s6">
+  <div class="hdr">
+    <div class="hdr-left"><span class="hdr-tag">Sistema B&amp;A</span><span class="hdr-step">Completado</span></div>
+    <div class="hdr-mono"><img src="logo_sm_blanco.png" alt="MS"></div>
+    <div class="hdr-right">Dr. Miguel Soto<br>Cirujano Plástico</div>
+  </div>
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Registro guardado</div>
+    <div class="success-sub" id="success-sub"></div>
+    <div class="success-path" id="success-path"></div>
+    <button class="btn btn-primary" style="max-width:280px;margin-top:8px" onclick="reset()">Nuevo registro</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const BACKEND = 'https://script.google.com/macros/s/AKfycbxBweotrvZwTnMURRUWk2Qw68rTlR27DfSrUdOSXWfnkJbBlQiCfhItGRx6b38YyBIe/exec';
+const CLIENT_ID = '536486651249-cu5iq19frldtvvpsd1mamnqlr0attuab.apps.googleusercontent.com';
+const ALLOWED_UX = ['miguelsotomd@gmail.com','medicosmiguelsotomd@gmail.com','medicosmiguelsotomd1.1@gmail.com','medicosmiguelsotomd1.2@gmail.com','contenido.msoto@gmail.com'];
+const AUTH = { idToken:null, email:null };
+
+// Límite de peso por archivo. Apps Script aguanta ~40-50MB por petición;
+// el base64 infla ~33%, así que 40MB de archivo original es el punto seguro.
+const MAX_MB = 40;
+const MAX_BYTES = MAX_MB * 1024 * 1024;
+function mb(bytes){ return (bytes/1024/1024).toFixed(1); }
+
+// Categoría por procedimiento. CP, INY, ED, MR, TPO.
+const CAT = {
+  rinoplastia:'CP',blefaroplastia:'CP',otoplastia:'CP',deepplane:'CP','renuvion-face':'CP',mentoplastia:'CP',bichectomia:'CP',labios:'CP',mama:'CP',abdominoplastia:'CP',liposuccion:'CP',body360:'CP',ribxcar:'CP','renuvion-corp':'CP','lipo-muslos':'CP','lipo-brazos':'CP',celfina:'CP',
+  toxina:'INY','ha-labios':'INY','ha-rellenos':'INY',bioestimuladores:'INY',
+  'endolifting-facial':'ED','endolifting-corp':'ED',spectra:'ED','laser-cicatriz':'ED',
+  'prp-facial':'MR','prp-corp':'MR',
+  fibrosis:'TPO'
+};
+const LABELS = {
+  rinoplastia:'Rinoplastia',blefaroplastia:'Blefaroplastia',otoplastia:'Otoplastia',deepplane:'Deep Plane y derivados','renuvion-face':'Renuvion Face/Neck Lift',mentoplastia:'Mentoplastia / Mandíbula',bichectomia:'Bichectomía / Mucoplastia',labios:'Labios',mama:'Mama / Mastopexia',abdominoplastia:'Abdominoplastia',liposuccion:'Liposucción',body360:'Body360 / Tummy360 / Lipo HD',ribxcar:'RibXcar','renuvion-corp':'Renuvion Corporal','lipo-muslos':'Lipo Muslos / Trocánteres','lipo-brazos':'Lipo Brazos / Braquioplastia',celfina:'Celulitis / Celfina',
+  toxina:'Toxina Botulínica','ha-labios':'HA Labios','ha-rellenos':'HA Rellenos Faciales',bioestimuladores:'Bioestimuladores','endolifting-facial':'Endolifting Facial / Morpheus8 / Ultherapy','endolifting-corp':'Endolifting Corporal',spectra:'Spectra / eCO2','laser-cicatriz':'Láser / Cuidado de Cicatriz','prp-facial':'PRP / Exosomas Facial','prp-corp':'PRP / Exosomas Corporal',fibrosis:'Fibrosis Zero / PRUC'
+};
+// Nombre CORTO para el nombre de carpeta/foto (sin barras, conciso).
+// La interfaz sigue usando LABELS (completo); la carpeta usa SHORT.
+const SHORT = {
+  rinoplastia:'Rinoplastia',blefaroplastia:'Blefaroplastia',otoplastia:'Otoplastia',deepplane:'Deep Plane','renuvion-face':'Renuvion Facial',mentoplastia:'Mentoplastia',bichectomia:'Bichectomia',labios:'Labios',mama:'Mama',abdominoplastia:'Abdominoplastia',liposuccion:'Liposuccion',body360:'Body360',ribxcar:'RibXcar','renuvion-corp':'Renuvion Corporal','lipo-muslos':'Lipo Muslos','lipo-brazos':'Lipo Brazos',celfina:'Celulitis',
+  toxina:'Toxina','ha-labios':'HA Labios','ha-rellenos':'HA Rellenos',bioestimuladores:'Bioestimuladores','endolifting-facial':'Endolifting Facial','endolifting-corp':'Endolifting Corporal',spectra:'Spectra','laser-cicatriz':'Laser','prp-facial':'PRP Facial','prp-corp':'PRP Corporal',fibrosis:'Fibrosis'
+};
+function corto(id){ return SHORT[id] || LABELS[id] || id; }
+const ORIGEN_TPO = ['rinoplastia','blefaroplastia','otoplastia','deepplane','renuvion-face','mentoplastia','bichectomia','labios','mama','abdominoplastia','liposuccion','body360','ribxcar','renuvion-corp','lipo-muslos','lipo-brazos','celfina'];
+
+const PROJ = {
+  rinoplastia:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Cabeza hacia atrás','Lat Der Sonriendo','Lat Izq Sonriendo','Frente Fosas Nasales'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  blefaroplastia:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Ojos Arriba','Frente Ojos Cerrados'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  otoplastia:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  deepplane:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  'renuvion-face':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo'],video:true,nota:'1 vuelta completa (~15 seg) + video prueba de flacidez'},
+  mentoplastia:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  bichectomia:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  labios:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Sonriendo','Frente Besando','Rostro Hacia Atrás'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  mama:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Brazos en Jarra','Lat Der Brazos Extendidos','Lat Izq Brazos Extendidos'],video:true,nota:'1 vuelta completa (~15-20 seg)'},
+  abdominoplastia:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°'],video:true,nota:'1 vuelta completa (~15-20 seg)'},
+  liposuccion:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°'],video:true,nota:'1 vuelta completa (~15-20 seg)'},
+  body360:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°'],video:true,nota:'1 vuelta completa (~15-20 seg) + video prueba de flacidez'},
+  ribxcar:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°'],video:true,nota:'1 vuelta completa (~15-20 seg) + video prueba de flacidez'},
+  'renuvion-corp':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°'],video:true,nota:'1 vuelta completa (~15-20 seg) + video prueba de flacidez'},
+  'lipo-muslos':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Muslo Posterior','Frente Piernas Separadas','Posterior Piernas Separadas'],video:true,nota:'1 vuelta completa (~15-20 seg)'},
+  'lipo-brazos':{fotos:['Frontal Derecha','Frontal Izquierda','Posterior Derecha','Posterior Izquierda'],video:true,nota:'1 vuelta completa (~15-20 seg)'},
+  celfina:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Post Glúteos Reposo','OD Glúteos Reposo','OI Glúteos Reposo','Post Glúteos Contraídos','OD Contraídos','OI Contraídos'],video:true,nota:'1 vuelta completa (~15-20 seg)'},
+  toxina:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Ceño Fruncido','Frente Cejas Arriba','Frente Sonriendo','Cara de Fuchi'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  'ha-labios':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Sonriendo','Frente Besando','Rostro Hacia Atrás'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  'ha-rellenos':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  bioestimuladores:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  'endolifting-facial':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Frente Barbilla Abajo','Lat Der Barbilla Abajo','Lat Izq Barbilla Abajo'],video:true,nota:'1 vuelta completa (~15 seg) + video prueba de flacidez'},
+  'endolifting-corp':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior','Lat Der Inclinación 45°','Lat Izq Inclinación 45°'],video:true,nota:'1 vuelta completa (~15-20 seg) + video prueba de flacidez'},
+  spectra:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  'laser-cicatriz':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  'prp-facial':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq'],video:true,nota:'1 vuelta completa (~15 seg)'},
+  'prp-corp':{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior'],video:true,nota:'1 vuelta completa (~15-20 seg)'},
+  fibrosis:{fotos:['Frente','OD (Oblicua Der)','OI (Oblicua Izq)','Lat Der','Lat Izq','Posterior'],video:true,nota:'1 vuelta completa (~15-20 seg)'}
+};
+
+// state.procs = ids visibles seleccionados (incluye 'fibrosis' si es TPO)
+// state.tpoOrigen = [ids] de origen cuando es TPO
+// state.upUnits = unidades de subida calculadas (cada una: {key, cat, label, projId})
+let state = { paciente:'',fechaNac:'',procs:[],tpoOrigen:[],momento:'',checklist:{},files:{},upUnits:[],upActive:null,currentScreen:1 };
+
+function $(id){ return document.getElementById(id); }
+function decodeJwt(t){ try{ const p=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(escape(atob(p)))); }catch(e){ return null; } }
+function authStatus(msg,cls){ const s=$('auth-status'); s.textContent=msg||''; s.className='auth-status'+(cls?(' '+cls):''); }
+function setStatus(html,cls){ const s=$('status'); s.innerHTML=html||''; s.className='status'+(cls?(' '+cls):''); }
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function hoyDDMMAAAA(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+d.getFullYear(); }
+function esTPO(){ return state.procs.length===1 && state.procs[0]==='fibrosis'; }
+
+// ── LOGIN ──
+function onCredential(resp){
+  const data=decodeJwt(resp.credential);
+  if(!data||!data.email){ authStatus('No se pudo leer la identidad. Intenta de nuevo.','err'); return; }
+  const email=data.email.toLowerCase();
+  if(!ALLOWED_UX.includes(email)){ authStatus('La cuenta '+email+' no está autorizada.','err'); return; }
+  AUTH.idToken=resp.credential; AUTH.email=email;
+  $('auth-gate').style.display='none';
+  $('user-strip').innerHTML=email+' · <a id="logout">salir</a>';
+  $('logout').addEventListener('click',()=>openGate());
+}
+function openGate(msg){ AUTH.idToken=null; AUTH.email=null; $('auth-gate').style.display='flex'; if(typeof msg==='string') authStatus(msg,'err'); else authStatus(''); }
+function initAuth(){
+  if(!(window.google&&google.accounts&&google.accounts.id)){ setTimeout(initAuth,200); return; }
+  google.accounts.id.initialize({ client_id:CLIENT_ID, callback:onCredential });
+  google.accounts.id.renderButton($('gbtn'),{theme:'outline',size:'large',text:'signin_with',shape:'pill',width:260});
+}
+window.addEventListener('load',initAuth);
+
+// ── SCREEN 1: BUSCAR (automático con debounce) ──
+let debounceT=null, lastReq=0;
+$('q').addEventListener('input',()=>{
+  const q=$('q').value.trim();
+  $('results').innerHTML='';
+  clearTimeout(debounceT);
+  if(q.length<2){ setStatus(''); return; }
+  setStatus('<span class="spin"></span> Buscando…');
+  debounceT=setTimeout(()=>buscar(q),350);
+});
+function buscar(q){
+  if(!AUTH.idToken){ openGate('Inicia sesión para buscar.'); return; }
+  const myReq=++lastReq;
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST',BACKEND,true);
+  xhr.setRequestHeader('Content-Type','text/plain;charset=utf-8');
+  xhr.onload=()=>{
+    if(myReq!==lastReq) return; // ignora respuestas viejas
+    let r; try{ r=JSON.parse(xhr.responseText); }catch(e){ setStatus('Respuesta inválida del servidor.','err'); return; }
+    if(r.authError){ openGate('Tu sesión expiró o la cuenta no está autorizada.'); return; }
+    if(!r.ok){ setStatus(r.error||'No se pudo buscar.','err'); return; }
+    pintarResultados(r.resultados||[]);
+  };
+  xhr.onerror=()=>{ if(myReq===lastReq) setStatus('Error de conexión con el backend.','err'); };
+  xhr.send(JSON.stringify({ action:'buscar', idToken:AUTH.idToken, q:q }));
+}
+function pintarResultados(lista){
+  if(!lista.length){ setStatus('Sin coincidencias.'); return; }
+  setStatus(lista.length+(lista.length===1?' resultado':' resultados'));
+  const cont=$('results');
+  lista.forEach(p=>{
+    const div=document.createElement('div'); div.className='result';
+    div.innerHTML='<div><div class="result-name"></div>'+(p.fechaNac?'<div class="result-dob">Nac. '+escapeHtml(p.fechaNac)+'</div>':'')+'</div><span class="result-arrow">›</span>';
+    div.querySelector('.result-name').textContent=p.nombre;
+    div.addEventListener('click',()=>seleccionarPaciente(p));
+    cont.appendChild(div);
+  });
+}
+function seleccionarPaciente(p){
+  state.paciente=p.nombre; state.fechaNac=p.fechaNac||'';
+  state.procs=[]; state.tpoOrigen=[]; state.momento=''; state.checklist={}; state.files={}; state.upUnits=[]; state.upActive=null;
+  $('q').value=''; $('results').innerHTML=''; setStatus('');
+  document.querySelectorAll('#s2 .chip.on').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('#s2 .chip.dim').forEach(c=>c.classList.remove('dim'));
+  document.querySelectorAll('#s2 .mbtn.on').forEach(b=>b.classList.remove('on'));
+  $('pc').textContent='0'; $('tpo-oc').textContent='0';
+  buildOrigenGrid();
+  refreshTPOui();
+  check2();
+  goTo(2);
+}
+
+function renderBanners(){
+  const html='<div><div class="pn">'+escapeHtml(state.paciente)+'</div>'+(state.fechaNac?'<div class="pd">Nac. '+escapeHtml(state.fechaNac)+'</div>':'')+'</div><span class="pchg" onclick="goTo(1)">Cambiar</span>';
+  ['pat-banner-2','pat-banner-3','pat-banner-4'].forEach(id=>{ if($(id)) $(id).innerHTML=html; });
+}
+
+// ── SCREEN 2 ──
+document.querySelectorAll('#s2 .chip[data-id]').forEach(c=>{
+  c.addEventListener('click',()=>{
+    if(c.classList.contains('dim')) return;
+    c.classList.toggle('on');
+    const id=c.dataset.id;
+    state.procs=c.classList.contains('on') ? [...state.procs,id] : state.procs.filter(x=>x!==id);
+    $('pc').textContent=state.procs.length;
+    refreshTPOui();
+    check2();
+  });
+});
+document.querySelectorAll('#s2 .mbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#s2 .mbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); state.momento=b.dataset.val; check2();
+  });
+});
+
+// Construye el grid de origen TPO una vez
+function buildOrigenGrid(){
+  const grid=$('tpo-origen-grid'); if(grid.dataset.built) return;
+  ORIGEN_TPO.forEach(id=>{
+    const ch=document.createElement('div'); ch.className='chip'; ch.dataset.origen=id; ch.textContent=LABELS[id];
+    ch.addEventListener('click',()=>{
+      ch.classList.toggle('on');
+      state.tpoOrigen=ch.classList.contains('on') ? [...state.tpoOrigen,id] : state.tpoOrigen.filter(x=>x!==id);
+      $('tpo-oc').textContent=state.tpoOrigen.length;
+      check2();
+    });
+    grid.appendChild(ch);
+  });
+  grid.dataset.built='1';
+}
+
+// Muestra/oculta UI según si hay TPO seleccionada
+function refreshTPOui(){
+  const hayFibrosis = state.procs.includes('fibrosis');
+  const soloFibrosis = esTPO();
+  // Si se elige fibrosis, las demás chips PRINCIPALES se atenúan (TPO va sola).
+  // OJO: solo las del bloque principal (data-id), NO las del grid de origen
+  // TPO (data-origen), que deben quedar activas para poder elegir el origen.
+  document.querySelectorAll('#s2 .chip[data-id]').forEach(c=>{
+    if(c.dataset.id==='fibrosis') return;
+    c.classList.toggle('dim', hayFibrosis);
+  });
+  // Si hay otras y luego intenta fibrosis: no la dejamos (va sola)
+  $('tpo-note').style.display = hayFibrosis ? 'block' : 'none';
+  $('tpo-origen-card').style.display = soloFibrosis ? 'block' : 'none';
+  // Momento: oculto en TPO
+  $('momento-card').style.display = soloFibrosis ? 'none' : 'block';
+  $('momento-locked').style.display = soloFibrosis ? 'block' : 'none';
+  if(soloFibrosis) state.momento='Post';
+}
+
+function check2(){
+  if(esTPO()){
+    $('btn2').disabled = !(state.tpoOrigen.length>0);
+  } else {
+    $('btn2').disabled = !(state.procs.length && state.momento);
+  }
+}
+$('btn2').addEventListener('click',()=>{
+  // seguridad: si mezclaron fibrosis con otros, no permitir
+  if(state.procs.includes('fibrosis') && state.procs.length>1){
+    toast('La Terapia Postoperatoria debe ir sola','err'); return;
+  }
+  goTo(3);
+});
+
+// Devuelve los procedimientos cuyas PROYECCIONES se usan (para checklist y fotos)
+function procsParaProyecciones(){
+  return esTPO() ? state.tpoOrigen.slice() : state.procs.slice();
+}
+// Devuelve las "unidades de subida": cada una crea una carpeta en Drive
+function buildUnits(){
+  if(esTPO()){
+    // Una sola unidad TPO. Hereda proyecciones de todos los orígenes (unión).
+    const projIds=state.tpoOrigen.slice();
+    const label = state.tpoOrigen.map(id=>LABELS[id]).join(' + ');
+    state.upUnits=[{ key:'tpo', cat:'TPO', label:'TPO · '+label, projIds:projIds,
+      origenLabels: state.tpoOrigen.map(id=>LABELS[id]).join(' / '),
+      origenCorto: state.tpoOrigen.map(id=>corto(id)).join(' + ') }];
+  } else {
+    state.upUnits=state.procs.map(id=>({ key:id, cat:CAT[id], label:LABELS[id], projIds:[id], origenLabels:null }));
+  }
+}
+
+// ── SCREEN 3: CHECKLIST ──
+function buildChecklist(){
+  state.checklist={};
+  state.upUnits.forEach(u=>{
+    const set=new Map(); let video=false, nota='';
+    u.projIds.forEach(pid=>{
+      const p=PROJ[pid]; if(!p) return;
+      p.fotos.forEach(f=>set.set(f,true));
+      if(p.video){ video=true; if(/flacidez/.test(p.nota)) nota=p.nota; else if(!nota) nota=p.nota; }
+    });
+    const items=[...Array.from(set.keys()).map(f=>({label:f,type:'foto',done:false}))];
+    if(video) items.push({label:'Video 360°',type:'video',done:false,nota:nota});
+    state.checklist[u.key]=items;
+  });
+  renderChecklist();
+}
+function renderChecklist(){
+  const cont=$('chklist'); cont.innerHTML='';
+  state.upUnits.forEach(u=>{
+    const items=state.checklist[u.key]||[];
+    const block=document.createElement('div'); block.className='proc-block';
+    block.innerHTML='<div class="proc-head"><span class="proc-cat">'+u.cat+'</span>'+escapeHtml(u.label)+'</div><div class="proc-sub">'+items.filter(i=>i.done).length+' de '+items.length+' marcadas</div>';
+    items.forEach(it=>{
+      const row=document.createElement('div');
+      row.className='chk-item'+(it.type==='video'?' video':'')+(it.done?' done':'');
+      row.innerHTML='<div class="chk-box"><span class="chk-check">✓</span></div><div style="flex:1"><div class="chk-text">'+escapeHtml(it.label)+'</div>'+(it.nota?'<div class="chk-note">'+escapeHtml(it.nota)+'</div>':'')+'</div>'+(it.type==='video'?'<span class="chk-vid-badge">VIDEO · OPCIONAL</span>':'');
+      row.addEventListener('click',()=>{ it.done=!it.done; renderChecklist(); });
+      block.appendChild(row);
+    });
+    cont.appendChild(block);
+  });
+  let total=0,done=0;
+  state.upUnits.forEach(u=>{ (state.checklist[u.key]||[]).forEach(i=>{ total++; if(i.done) done++; }); });
+  $('chk-counter').innerHTML='<strong>'+done+'</strong> de <strong>'+total+'</strong> proyecciones marcadas';
+}
+$('btn3').addEventListener('click',()=>goTo(4));
+
+// ── REQUISITOS por unidad (fotos y video por separado) ──
+function reqDe(u){
+  const set=new Map(); let video=false;
+  u.projIds.forEach(pid=>{ const p=PROJ[pid]; if(!p) return; p.fotos.forEach(f=>set.set(f,true)); if(p.video) video=true; });
+  return { fotos:set.size, video: video?1:0 };
+}
+function cuentaDe(key){
+  const arr=state.files[key]||[];
+  const vids=arr.filter(f=>f.type.startsWith('video/')).length;
+  const fotos=arr.length-vids;
+  return { fotos:fotos, video:vids };
+}
+function unidadCumple(u){
+  // Fotos obligatorias. El video es OPCIONAL (no bloquea el envío).
+  const r=reqDe(u), c=cuentaDe(u.key);
+  return c.fotos>=r.fotos;
+}
+// ¿A esta unidad le falta el video recomendado? (para el recordatorio suave)
+function faltaVideo(u){
+  const r=reqDe(u), c=cuentaDe(u.key);
+  return r.video>0 && c.video===0;
+}
+
+// ── SCREEN 4: FOTOS ──
+function buildUpload(){
+  state.upUnits.forEach(u=>{ if(!state.files[u.key]) state.files[u.key]=[]; });
+  if(!state.upActive || !state.upUnits.find(u=>u.key===state.upActive)) state.upActive=state.upUnits[0].key;
+  $('s4-sub').textContent = state.upUnits.length>1 ? 'Sube fotos y video de cada procedimiento por separado' : 'Sube las fotos y el video';
+  renderTabs(); renderUploadZone();
+}
+function renderTabs(){
+  const tabs=$('up-tabs'); tabs.innerHTML='';
+  if(state.upUnits.length<=1){ tabs.style.display='none'; return; }
+  tabs.style.display='flex';
+  state.upUnits.forEach(u=>{
+    const ok=unidadCumple(u);
+    const t=document.createElement('div');
+    t.className='up-tab'+(u.key===state.upActive?' active':'')+(ok?' complete':'');
+    t.innerHTML='<span class="dot"></span>'+escapeHtml(u.label)+(ok?' ✓':'');
+    t.addEventListener('click',()=>{ state.upActive=u.key; renderTabs(); renderUploadZone(); });
+    tabs.appendChild(t);
+  });
+}
+function renderUploadZone(){
+  const u=state.upUnits.find(x=>x.key===state.upActive);
+  $('up-current-title').innerHTML='<span class="proc-cat">'+u.cat+'</span> '+escapeHtml(u.label);
+  renderReqBar(u);
+  renderPreviews();
+  updateBtn4();
+}
+function renderReqBar(u){
+  const r=reqDe(u), c=cuentaDe(u.key);
+  const fotoOk=c.fotos>=r.fotos, vidOk=c.video>=r.video;
+  let html='<div class="req-pill '+(fotoOk?'ok':'bad')+'">'+(fotoOk?'✓':'•')+' Fotos <b>'+c.fotos+'/'+r.fotos+'</b></div>';
+  if(r.video){
+    // Video opcional: verde si ya está, ámbar "opcional" si falta (nunca rojo).
+    if(vidOk) html+='<div class="req-pill ok">✓ Video <b>'+c.video+'</b></div>';
+    else      html+='<div class="req-pill opt">○ Video <b>opcional</b></div>';
+  }
+  $('req-bar').innerHTML=html;
+}
+const fi=$('fi'), dz=$('dz');
+fi.addEventListener('change',e=>{ addFiles(e.target.files); fi.value=''; });
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');addFiles(e.dataTransfer.files);});
+function addFiles(list){
+  const arr=state.files[state.upActive];
+  const rechazados=[];
+  Array.from(list).forEach(f=>{
+    if(f.size > MAX_BYTES){
+      rechazados.push(f.name+' ('+mb(f.size)+' MB)');
+      return; // no se agrega
+    }
+    if(!arr.find(x=>x.name===f.name&&x.size===f.size)) arr.push(f);
+  });
+  if(rechazados.length){
+    toast('Archivo muy pesado (límite '+MAX_MB+' MB):\n'+rechazados.join('\n')+'\n\nGraba el video en 1080p (no 4K) o más corto.','err');
+  }
+  renderUploadZone(); renderTabs();
+}
+function renderPreviews(){
+  const pg=$('pg'); pg.innerHTML='';
+  const arr=state.files[state.upActive]||[];
+  arr.forEach((f,i)=>{
+    const w=document.createElement('div'); w.className='thumb';
+    const url=URL.createObjectURL(f);
+    if(f.type.startsWith('video/')){
+      const v=document.createElement('video'); v.src=url; v.muted=true; v.preload='metadata'; w.appendChild(v);
+      const b=document.createElement('div'); b.className='thumb-vid'; b.textContent='VID'; w.appendChild(b);
+    } else { const img=document.createElement('img'); img.src=url; w.appendChild(img); }
+    const num=document.createElement('div'); num.className='thumb-num'; num.textContent=(i+1); w.appendChild(num);
+    const d=document.createElement('button'); d.className='thumb-del'; d.textContent='×';
+    d.addEventListener('click',e=>{ e.stopPropagation(); arr.splice(i,1); renderUploadZone(); renderTabs(); });
+    w.appendChild(d); pg.appendChild(w);
+  });
+}
+function updateBtn4(){
+  const todasCumplen=state.upUnits.every(u=>unidadCumple(u));
+  $('btn4').disabled=!todasCumplen;
+}
+$('btn4').addEventListener('click',()=>{
+  const faltan=state.upUnits.filter(u=>!unidadCumple(u));
+  if(faltan.length){
+    const det=faltan.map(u=>{ const r=reqDe(u),c=cuentaDe(u.key); return '• '+u.label+': faltan '+(r.fotos-c.fotos)+' foto(s)'; }).join('\n');
+    toast('Faltan fotos:\n'+det,'err'); return;
+  }
+  goTo(5);
+});
+
+// ── SCREEN 5: RESUMEN ──
+function buildSummary(){
+  let rows='';
+  rows+='<div class="summary-row"><span class="summary-key">Paciente</span><span class="summary-val">'+escapeHtml(state.paciente)+'</span></div>';
+  if(state.fechaNac) rows+='<div class="summary-row"><span class="summary-key">Fecha nac.</span><span class="summary-val">'+escapeHtml(state.fechaNac)+'</span></div>';
+  rows+='<div class="summary-row"><span class="summary-key">Momento</span><span class="summary-val"><span class="summary-moment">'+state.momento+'</span></span></div>';
+  rows+='<div class="summary-row"><span class="summary-key">Fecha</span><span class="summary-val">'+hoyDDMMAAAA()+'</span></div>';
+  state.upUnits.forEach(u=>{
+    const c=cuentaDe(u.key);
+    const carpeta=nombreCarpeta(u);
+    rows+='<div class="summary-row"><span class="summary-key">'+u.cat+' · '+escapeHtml(u.label)+'</span><span class="summary-val">'+c.fotos+' foto(s)'+(c.video?' · '+c.video+' video(s)':'')+'<br><span style="font-size:10px;color:var(--taupe-mid)">📁 '+escapeHtml(carpeta)+'</span></span></div>';
+  });
+  $('summary').innerHTML=rows;
+}
+// Nombre de carpeta. TPO (Opción A): "TPO - Paciente - [Origen] - Post - Fecha"
+function nombreCarpeta(u){
+  if(u.cat==='TPO'){
+    // TPO ya lleva el procedimiento de origen, que cumple la función de sellar.
+    return ['TPO', u.origenCorto, state.paciente, 'Post', hoyDDMMAAAA()].join(' - ');
+  }
+  // Categoría + Procedimiento (corto) + Paciente + Momento + Fecha (responsable lo añade el backend)
+  return [u.cat, corto(u.key), state.paciente, state.momento, hoyDDMMAAAA()].join(' - ');
+}
+
+// ── ENVÍO ──
+$('btn5').addEventListener('click',enviar);
+
+// Llama al backend por POST. Reintenta hasta 'reintentos' veces si hay error de red.
+function postBackend(payload, reintentos=2){
+  return new Promise((resolve,reject)=>{
+    const intento=(quedan)=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open('POST',BACKEND,true);
+      xhr.setRequestHeader('Content-Type','text/plain;charset=utf-8');
+      xhr.timeout=120000; // 2 min por archivo
+      xhr.onload=()=>{ try{ resolve(JSON.parse(xhr.responseText)); }catch(e){ reject(new Error('Respuesta inválida del servidor')); } };
+      const fallo=()=>{ if(quedan>0){ setTimeout(()=>intento(quedan-1), 1500); } else { reject(new Error('Error de conexión')); } };
+      xhr.onerror=fallo; xhr.ontimeout=fallo;
+      xhr.send(JSON.stringify(payload));
+    };
+    intento(reintentos);
+  });
+}
+
+// Convierte un File a base64 (sin el prefijo data:).
+function fileABase64(file){
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=()=>rej(new Error('No se pudo leer el archivo')); r.readAsDataURL(file); });
+}
+
+async function enviar(){
+  if(!AUTH.idToken){ openGate('Inicia sesión para subir.'); return; }
+
+  // Red de seguridad: ningún archivo debe pasar el límite.
+  const pesados=[];
+  state.upUnits.forEach(u=>{
+    (state.files[u.key]||[]).forEach(f=>{ if(f.size>MAX_BYTES) pesados.push(f.name+' ('+mb(f.size)+' MB)'); });
+  });
+  if(pesados.length){
+    toast('No se puede subir, archivo(s) sobre el límite de '+MAX_MB+' MB:\n'+pesados.join('\n'),'err');
+    return;
+  }
+
+  // Recordatorio: si algún procedimiento no lleva su video (opcional), confirmar.
+  const sinVideo=state.upUnits.filter(u=>faltaVideo(u));
+  if(sinVideo.length){
+    const lista=sinVideo.map(u=>u.label).join(', ');
+    const ok=confirm('No adjuntaste video en: '+lista+'.\n\nEl video es opcional, pero recomendado para el before/after.\n\n¿Subir de todos modos sin video?');
+    if(!ok) return; // el usuario decide volver y agregarlo
+  }
+
+  $('btn5').disabled=true;
+  const uprog=$('uprog'), uf=$('uf'), ul=$('ul');
+  uprog.style.display='block';
+  const fecha=hoyDDMMAAAA();
+  const carpetasOk=[];
+
+  // Total de archivos para la barra de progreso global
+  const totalGlobal=state.upUnits.reduce((s,u)=>s+(state.files[u.key]||[]).length,0) || 1;
+  let hechosGlobal=0;
+
+  try{
+    for(let c=0;c<state.upUnits.length;c++){
+      const u=state.upUnits[c];
+      const arr=state.files[u.key];
+      const carpetaNombre=nombreCarpeta(u);
+      const momento=(u.cat==='TPO'?'Post':state.momento);
+
+      // 1) Crear la carpeta (vacía)
+      ul.textContent='['+u.label+'] creando carpeta…';
+      const cre=await postBackend({ action:'crearCarpeta', idToken:AUTH.idToken, categoria:u.cat, paciente:state.paciente, momento:momento, fecha:fecha, carpetaNombre:carpetaNombre });
+      if(cre.authError){ return abortarAuth(uprog,uf); }
+      if(!cre.success) throw new Error(cre.error||'No se pudo crear la carpeta de '+u.label);
+
+      // 2) Subir archivo por archivo
+      for(let i=0;i<arr.length;i++){
+        ul.textContent='['+u.label+'] subiendo '+(i+1)+'/'+arr.length+'…';
+        const b64=await fileABase64(arr[i]);
+        const res=await postBackend({ action:'agregarArchivo', idToken:AUTH.idToken, carpetaId:cre.carpetaId, carpetaNombre:cre.carpeta, indice:(i+1), archivo:{ nombre:arr[i].name, mimeType:arr[i].type, base64:b64 } });
+        if(res.authError){ return abortarAuth(uprog,uf); }
+        if(!res.success) throw new Error(res.error||'Falló un archivo de '+u.label);
+        hechosGlobal++;
+        uf.style.width=(hechosGlobal/totalGlobal*100)+'%';
+      }
+
+      // 3) Finalizar: notificar a Telegram
+      await postBackend({ action:'finalizar', idToken:AUTH.idToken, categoria:u.cat, paciente:state.paciente, carpeta:cre.carpeta, carpetaUrl:cre.carpetaUrl, numArchivos:arr.length });
+      carpetasOk.push({carpeta:cre.carpeta,n:arr.length});
+    }
+
+    uf.style.width='100%';
+    const totalArch=carpetasOk.reduce((s,c)=>s+c.n,0);
+    $('success-sub').textContent=totalArch+' archivo(s) en '+carpetasOk.length+' carpeta(s)';
+    $('success-path').innerHTML=carpetasOk.map(c=>'📁 '+escapeHtml(c.carpeta)).join('<br>');
+    goTo(6);
+  }catch(err){
+    toast('❌ '+err.message,'err');
+    $('btn5').disabled=false;
+  }finally{
+    setTimeout(()=>{ uprog.style.display='none'; uf.style.width='0%'; },2500);
+  }
+}
+
+function abortarAuth(uprog,uf){
+  uprog.style.display='none'; uf.style.width='0%'; $('btn5').disabled=false;
+  openGate('Tu sesión expiró. Inicia sesión de nuevo.');
+}
+
+// ── NAVEGACIÓN ──
+function goTo(n){
+  renderBanners();
+  if(n===3){ buildUnits(); buildChecklist(); }
+  if(n===4){ buildUnits(); buildUpload(); }
+  if(n===5) buildSummary();
+  document.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n-1));
+  state.currentScreen=n;
+  window.scrollTo(0,0);
+}
+function reset(){
+  state={ paciente:'',fechaNac:'',procs:[],tpoOrigen:[],momento:'',checklist:{},files:{},upUnits:[],upActive:null,currentScreen:1 };
+  $('q').value=''; $('results').innerHTML=''; setStatus('');
+  document.querySelectorAll('#s2 .chip[data-id].on').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('#s2 .chip[data-id].dim').forEach(c=>c.classList.remove('dim'));
+  document.querySelectorAll('#tpo-origen-grid .chip.on').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('#s2 .mbtn.on').forEach(b=>b.classList.remove('on'));
+  $('pc').textContent='0'; $('tpo-oc').textContent='0';
+  refreshTPOui();
+  $('btn2').disabled=true; $('btn4').disabled=true; $('btn5').disabled=false;
+  goTo(1);
+}
+let tt;
+function toast(msg,type=''){ const t=$('toast'); clearTimeout(tt); t.innerText=msg; t.className='show '+type; tt=setTimeout(()=>{t.className='';},5000); }
+</script>
+</body>
+</html>
