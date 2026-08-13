@@ -394,16 +394,25 @@ input[type=text]::placeholder{color:var(--taupe-light)}
 </div>
 
 <!-- VISOR de foto a pantalla completa -->
-<div id="viewer" onclick="cerrarViewer()">
-  <span id="viewer-close">×</span>
+<div id="viewer">
+  <span id="viewer-close" onclick="cerrarViewer()">×</span>
+  <span id="viewer-prev" class="viewer-nav" onclick="navViewer(-1)">‹</span>
   <img id="viewer-img" src="" alt="">
+  <span id="viewer-next" class="viewer-nav" onclick="navViewer(1)">›</span>
+  <div id="viewer-count"></div>
 </div>
 
 <style>
 #viewer{display:none;position:fixed;inset:0;z-index:2000;background:rgba(3,7,7,.94);align-items:center;justify-content:center;padding:20px}
 #viewer.show{display:flex}
 #viewer img{max-width:100%;max-height:90vh;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-#viewer-close{position:absolute;top:16px;right:24px;color:#fff;font-size:40px;cursor:pointer;line-height:1;font-weight:300}
+#viewer-close{position:absolute;top:16px;right:24px;color:#fff;font-size:40px;cursor:pointer;line-height:1;font-weight:300;z-index:3}
+.viewer-nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:54px;font-weight:300;cursor:pointer;line-height:1;padding:20px 16px;user-select:none;-webkit-user-select:none;opacity:.85;z-index:3}
+.viewer-nav:active{opacity:1}
+#viewer-prev{left:6px}
+#viewer-next{right:6px}
+.viewer-nav.hidden{display:none}
+#viewer-count{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;letter-spacing:.1em;opacity:.75;background:rgba(0,0,0,.35);padding:5px 14px;border-radius:20px}
 .cons-grupo{margin-bottom:24px}
 .cons-momento{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--black);font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:8px}
 .cons-momento .mtag{font-size:9px;letter-spacing:.06em;padding:2px 9px;border-radius:10px;color:#fff}
@@ -1067,10 +1076,15 @@ function cargarFotos(carpetaId){
     let r; try{ r=JSON.parse(xhr.responseText); }catch(e){ box.innerHTML='<div class="cons-loading">error</div>'; return; }
     if(!r.ok || !r.fotos || !r.fotos.length){ box.innerHTML='<div class="cons-loading">sin fotos</div>'; return; }
     box.innerHTML='';
+    // Solo las imágenes (no videos) forman la galería navegable de esta carpeta.
+    const galeria = r.fotos.filter(f=>!f.esVideo).map(f=>f.thumb.replace('sz=w400','sz=w1600'));
     r.fotos.forEach(f=>{
       const d=document.createElement('div'); d.className='cons-foto';
       d.innerHTML='<img src="'+f.thumb+'" loading="lazy" alt="">'+(f.esVideo?'<span class="vbadge">VID</span>':'');
-      d.addEventListener('click',()=>{ if(f.esVideo){ window.open(f.verUrl,'_blank'); } else { abrirViewer(f.thumb.replace('sz=w400','sz=w1600')); } });
+      d.addEventListener('click',()=>{
+        if(f.esVideo){ window.open(f.verUrl,'_blank'); }
+        else { const grande=f.thumb.replace('sz=w400','sz=w1600'); abrirViewer(galeria, galeria.indexOf(grande)); }
+      });
       box.appendChild(d);
     });
   };
@@ -1078,8 +1092,49 @@ function cargarFotos(carpetaId){
   xhr.send(JSON.stringify({ action:'fotosDeCarpeta', idToken:AUTH.idToken, carpetaId:carpetaId }));
 }
 
-function abrirViewer(url){ $('viewer-img').src=url; $('viewer').classList.add('show'); }
-function cerrarViewer(){ $('viewer').classList.remove('show'); $('viewer-img').src=''; }
+// ── VISOR navegable ──
+let viewerList=[], viewerIdx=0;
+function abrirViewer(lista, idx){
+  viewerList = lista || [];
+  viewerIdx = (idx>=0) ? idx : 0;
+  mostrarViewer();
+  $('viewer').classList.add('show');
+}
+function mostrarViewer(){
+  if(!viewerList.length) return;
+  $('viewer-img').src = viewerList[viewerIdx];
+  $('viewer-count').textContent = (viewerIdx+1)+' / '+viewerList.length;
+  // Ocultar flechas si solo hay una foto
+  const solaUna = viewerList.length<=1;
+  $('viewer-prev').classList.toggle('hidden', solaUna);
+  $('viewer-next').classList.toggle('hidden', solaUna);
+}
+function navViewer(dir){
+  if(!viewerList.length) return;
+  viewerIdx = (viewerIdx + dir + viewerList.length) % viewerList.length; // circular
+  mostrarViewer();
+}
+function cerrarViewer(){ $('viewer').classList.remove('show'); $('viewer-img').src=''; viewerList=[]; }
+
+// Teclado: flechas para navegar, Esc para cerrar
+document.addEventListener('keydown',e=>{
+  if(!$('viewer').classList.contains('show')) return;
+  if(e.key==='ArrowRight') navViewer(1);
+  else if(e.key==='ArrowLeft') navViewer(-1);
+  else if(e.key==='Escape') cerrarViewer();
+});
+
+// Swipe en móvil
+let touchX=null;
+$('viewer').addEventListener('touchstart',e=>{ touchX=e.changedTouches[0].screenX; },{passive:true});
+$('viewer').addEventListener('touchend',e=>{
+  if(touchX===null) return;
+  const dx=e.changedTouches[0].screenX - touchX;
+  if(Math.abs(dx)>50){ navViewer(dx<0 ? 1 : -1); }
+  touchX=null;
+});
+// Cerrar al tocar el fondo negro (no la imagen ni las flechas)
+$('viewer').addEventListener('click',e=>{ if(e.target.id==='viewer') cerrarViewer(); });
 </script>
 </body>
 </html>
